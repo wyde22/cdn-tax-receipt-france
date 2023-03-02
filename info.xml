@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<extension key="org.civicrm.cdntaxreceipts" type="module">
+  <file>cdntaxreceipts</file>
+  <name>CDN Tax Receipts (ML fork)</name>
+  <description>
+      Creates Tax Receipts including single or annual/aggregate tax receipts, with distribution by email or print,
+      detailed reporting, press ready PDF template possible. We worked with (and continue to work with) a BDO Tax Partner
+      who has strong ties to both the NPO community and Tax Authorities (CRA).
+  </description>
+  <license>AGPL</license>
+  <maintainer>
+    <author>KarinG and DaveD</author>
+    <email>frontdesk@semper-it.com</email>
+  </maintainer>
+  <releaseDate>2022-07-26</releaseDate>
+  <version>1.7.0</version>
+  <develStage>stable</develStage>
+  <compatibility>
+    <ver>5.45</ver>
+  </compatibility>
+  <urls>
+    <url desc="documentation">https://lab.civicrm.org/extensions/cdntaxreceipts/blob/master/README.md</url>
+    <url desc="Support">https://lab.civicrm.org/extensions/cdntaxreceipts/-/issues</url>
+  </urls>
+  <comments>
+    Fork by ML, which merges some elements from the original upstream and also bits from the CanadaHelps fork.
+  </comments>
+  <civix>
+    <namespace>CRM/Cdntaxreceipts</namespace>
+  </civix>
+</extension>
