@@ -25,6 +25,6 @@
     Je me suis fortement inspiré de cette extension et je modifie le module pour quil corresponde aux spécificités des associations françaises
   </comments>
   <civix>
-    <namespace>CRM/Cdntaxreceipts</namespace>
+    <namespace>CRM/CdntaxreceiptsFr</namespace>
   </civix>
 </extension>
