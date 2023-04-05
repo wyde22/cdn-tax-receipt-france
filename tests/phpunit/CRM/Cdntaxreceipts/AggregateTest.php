@@ -22,9 +22,9 @@ class CRM_Cdntaxreceipts_AggregateTest extends CRM_Cdntaxreceipts_Base {
   public function testAggregate(array $input, array $expected) {
     // set up mock time
     $mock_time = '2021-01-02 10:11:12';
-    \CRM_Cdntaxreceipts_Utils_Time::setTime($mock_time);
+    \CRM_Cdntaxreceiptsfr_Utils_Time::setTime($mock_time);
 
-    $this->setDeliveryMethod(CDNTAX_DELIVERY_PRINT_ONLY);
+    $this->setDeliveryMethod(CDNTAX_FR_DELIVERY_PRINT_ONLY);
 
     // create some contributions based on input
     $contact[1] = $this->individualCreate([], 1);
@@ -41,7 +41,7 @@ class CRM_Cdntaxreceipts_AggregateTest extends CRM_Cdntaxreceipts_Base {
     }
 
     // issue some receipts for the totals
-    $receiptsForPrintingPDF = cdntaxreceipts_openCollectedPDF();
+    $receiptsForPrintingPDF = cdntaxreceiptsfr_openCollectedPDF();
     $counter = 0;
     foreach ($input['grouped'] as $contact_index => $contributionList) {
       // update some things we don't know at dataprovider time
@@ -51,7 +51,7 @@ class CRM_Cdntaxreceipts_AggregateTest extends CRM_Cdntaxreceipts_Base {
       }
 
       // issue receipt for this contact
-      $status = cdntaxreceipts_issueAggregateTaxReceipt(
+      $status = cdntaxreceiptsfr_issueAggregateTaxReceipt(
         $contact[$contact_index],
         '2020',
         $input['grouped'][$contact_index],
@@ -88,7 +88,7 @@ class CRM_Cdntaxreceipts_AggregateTest extends CRM_Cdntaxreceipts_Base {
       $this->assertEquals($realExpected, $intersect);
     }
 
-    \CRM_Cdntaxreceipts_Utils_Time::reset();
+    \CRM_Cdntaxreceiptsfr_Utils_Time::reset();
   }
 
   /**

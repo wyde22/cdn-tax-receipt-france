@@ -7,7 +7,7 @@ class CRM_Cdntaxreceipts_MessageTemplateTest extends CRM_Cdntaxreceipts_Base {
 
   public function setUp(): void {
     parent::setUp();
-    $this->setDeliveryMethod(CDNTAX_DELIVERY_PRINT_EMAIL);
+    $this->setDeliveryMethod(CDNTAX_FR_DELIVERY_PRINT_EMAIL);
     // We want to start spooling at different times in each test, so FALSE.
     $this->mut = new CiviMailUtils($this, FALSE);
   }
@@ -42,7 +42,7 @@ class CRM_Cdntaxreceipts_MessageTemplateTest extends CRM_Cdntaxreceipts_Base {
     $contribution->find(TRUE);
     // issue receipt
     $this->mut->start();
-    list($result, $method) = cdntaxreceipts_issueTaxReceipt($contribution);
+    list($result, $method) = cdntaxreceiptsfr_issueTaxReceipt($contribution);
     $this->assertTrue($result);
     $this->assertEquals('email', $method);
 

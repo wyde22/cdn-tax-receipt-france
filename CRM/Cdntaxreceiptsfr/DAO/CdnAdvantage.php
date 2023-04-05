@@ -12,7 +12,7 @@
 /**
  * Database access object for the CdnAdvantage entity.
  */
-class CRM_Cdntaxreceipts_DAO_CdnAdvantage extends CRM_Core_DAO {
+class CRM_Cdntaxreceiptsfr_DAO_CdnAdvantage extends CRM_Core_DAO {
 
   /**
    * Static instance to hold the table name.
@@ -87,7 +87,7 @@ class CRM_Cdntaxreceipts_DAO_CdnAdvantage extends CRM_Core_DAO {
           'where' => 'cdntaxreceipts_advantage.id',
           'table_name' => 'cdntaxreceipts_advantage',
           'entity' => 'CdnAdvantage',
-          'bao' => 'CRM_Cdntaxreceipts_DAO_CdnAdvantage',
+          'bao' => 'CRM_Cdntaxreceiptsfr_DAO_CdnAdvantage',
           'localizable' => 0,
         ],
         'contribution_id' => [
@@ -97,7 +97,7 @@ class CRM_Cdntaxreceipts_DAO_CdnAdvantage extends CRM_Core_DAO {
           'where' => 'cdntaxreceipts_advantage.contribution_id',
           'table_name' => 'cdntaxreceipts_advantage',
           'entity' => 'CdnAdvantage',
-          'bao' => 'CRM_Cdntaxreceipts_DAO_CdnAdvantage',
+          'bao' => 'CRM_Cdntaxreceiptsfr_DAO_CdnAdvantage',
           'localizable' => 0,
         ],
         'advantage_description' => [
@@ -107,7 +107,7 @@ class CRM_Cdntaxreceipts_DAO_CdnAdvantage extends CRM_Core_DAO {
           'where' => 'cdntaxreceipts_advantage.advantage_description',
           'table_name' => 'cdntaxreceipts_advantage',
           'entity' => 'CdnAdvantage',
-          'bao' => 'CRM_Cdntaxreceipts_DAO_CdnAdvantage',
+          'bao' => 'CRM_Cdntaxreceiptsfr_DAO_CdnAdvantage',
           'localizable' => 1,
         ],
       ];

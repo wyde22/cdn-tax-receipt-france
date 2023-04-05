@@ -2,7 +2,7 @@
 
 require_once('CRM/Core/Form.php');
 
-class CRM_Cdntaxreceipts_Form_ViewTaxReceipt extends CRM_Core_Form {
+class CRM_Cdntaxreceiptsfr_Form_ViewTaxReceipt extends CRM_Core_Form {
 
   protected  $_reissue;
   protected $_receipt;
@@ -49,10 +49,10 @@ class CRM_Cdntaxreceipts_Form_ViewTaxReceipt extends CRM_Core_Form {
         $this->sendFile($contributionId, $contactId, $messageTemplateId); // exits
     }
 
-    list($issuedOn, $receiptId) = cdntaxreceipts_issued_on($contributionId);
+    [$issuedOn, $receiptId] = cdntaxreceiptsfr_issued_on($contributionId);
 
     if (isset($receiptId)) {
-      $existingReceipt = cdntaxreceipts_load_receipt($receiptId);
+      $existingReceipt = cdntaxreceiptsfr_load_receipt($receiptId);
       $this->_receipt = $existingReceipt;
       $this->_reissue = 1;
 
@@ -69,7 +69,7 @@ class CRM_Cdntaxreceipts_Form_ViewTaxReceipt extends CRM_Core_Form {
       $this->_isCancelled = 0;
     }
 
-    list($method, $email) = cdntaxreceipts_sendMethodForContact($contactId);
+    [$method, $email] = cdntaxreceiptsfr_sendMethodForContact($contactId);
     if ($this->_isCancelled == 1 && $method != 'data') {
       $method = 'print';
     }
@@ -187,9 +187,9 @@ class CRM_Cdntaxreceipts_Form_ViewTaxReceipt extends CRM_Core_Form {
     if ($buttonName == '_qf_ViewTaxReceipt_submit') {
 
       // Get the Tax Receipt that has already been issued previously for this Contribution
-      list($issued_on, $receipt_id) = cdntaxreceipts_issued_on($contribution->id);
+      [$issued_on, $receipt_id] = cdntaxreceiptsfr_issued_on($contribution->id);
 
-      $result = cdntaxreceipts_cancel($receipt_id);
+      $result = cdntaxreceiptsfr_cancel($receipt_id);
 
       if ($result == TRUE) {
         $statusMsg = ts('Tax Receipt has been cancelled.', array('domain' => 'org.civicrm.cdntaxreceipts'));
@@ -205,7 +205,7 @@ class CRM_Cdntaxreceipts_Form_ViewTaxReceipt extends CRM_Core_Form {
     }
     else {
       // issue tax receipt, or report error if ineligible
-      if ( ! cdntaxreceipts_eligibleForReceipt($contribution->id) ) {
+      if ( ! cdntaxreceiptsfr_eligibleForReceipt($contribution->id) ) {
         $statusMsg = ts('This contribution is not tax deductible and/or not completed. No receipt has been issued.', array('domain' => 'org.civicrm.cdntaxreceipts'));
         CRM_Core_Session::setStatus($statusMsg, '', 'error');
       }
@@ -214,7 +214,7 @@ class CRM_Cdntaxreceipts_Form_ViewTaxReceipt extends CRM_Core_Form {
 
         $collectedPdf = NULL;
         $printOverride = isset($submittedValues['printOverride']) ? $submittedValues['printOverride'] : NULL;
-        list($result, $method, $pdf) = cdntaxreceipts_issueTaxReceipt( $contribution, $collectedPdf, CDNTAXRECEIPTS_MODE_BACKOFFICE, $printOverride );
+        [$result, $method, $pdf] = cdntaxreceiptsfr_issueTaxReceipt( $contribution, $collectedPdf, CDNTAXRECEIPTS_FR_MODE_BACKOFFICE, $printOverride );
 
         if ($result == TRUE) {
           if ($method == 'email') {
@@ -258,7 +258,7 @@ class CRM_Cdntaxreceipts_Form_ViewTaxReceipt extends CRM_Core_Form {
     
         $context = ['contactId' => $contactId, 'contributionId' => $contributionId];
     
-        CRM_Cdntaxreceipts_Utils_DownloadPdfRecuFiscaux::downloadPDF($messageTemplateId,$context,$filename);
+        CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux::downloadPDF($messageTemplateId,$context,$filename);
         
       // set up headers and stream the file
       /*header('Content-Description: File Transfer');

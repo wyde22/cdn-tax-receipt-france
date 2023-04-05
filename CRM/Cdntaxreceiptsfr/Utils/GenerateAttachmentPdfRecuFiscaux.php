@@ -3,7 +3,7 @@
      * This class provides the common functionality for issuing CDN Tax Receipts for
      * one or a group of contact ids.
      */
-    class CRM_Cdntaxreceipts_Utils_GenerateAttachmentPdfRecuFiscaux {
+    class CRM_Cdntaxreceiptsfr_Utils_GenerateAttachmentPdfRecuFiscaux {
         
         public static function downloadPDF(int $messageTemplateID, array $context, string $filename) {
             $filename = CRM_Utils_File::makeFilenameWithUnicode($filename, '_', 200) . '.pdf';

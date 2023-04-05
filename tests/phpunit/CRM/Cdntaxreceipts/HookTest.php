@@ -15,7 +15,7 @@ class CRM_Cdntaxreceipts_HookTest extends CRM_Cdntaxreceipts_Base {
       'financial_type_id' => 'Donation',
       'total_amount' => '10',
     ]);
-    $amount = cdntaxreceipts_eligibleAmount($contribution['id']);
+    $amount = cdntaxreceiptsfr_eligibleAmount($contribution['id']);
     $this->assertEquals(10, $amount);
   }
 
@@ -32,7 +32,7 @@ class CRM_Cdntaxreceipts_HookTest extends CRM_Cdntaxreceipts_Base {
       'total_amount' => '10',
     ]);
     // We're expecting our hook to subtract 5 from the amount.
-    $amount = cdntaxreceipts_eligibleAmount($contribution['id']);
+    $amount = cdntaxreceiptsfr_eligibleAmount($contribution['id']);
     $this->assertEquals(5, $amount);
   }
 

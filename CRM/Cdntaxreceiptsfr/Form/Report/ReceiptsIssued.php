@@ -1,8 +1,8 @@
 <?php
 
-use CRM_Cdntaxreceipts_ExtensionUtil as E;
+use CRM_Cdntaxreceiptsfr_ExtensionUtil as E;
 
-class CRM_Cdntaxreceipts_Form_Report_ReceiptsIssued extends CRM_Report_Form {
+class CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsIssued extends CRM_Report_Form {
 
   function __construct() {
 

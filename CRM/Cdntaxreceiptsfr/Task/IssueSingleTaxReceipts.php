@@ -6,7 +6,7 @@ require_once('CRM/Contribute/Form/Task.php');
  * This class provides the common functionality for issuing CDN Tax Receipts for
  * one or a group of contact ids.
  */
-class CRM_Cdntaxreceipts_Task_IssueSingleTaxReceipts extends CRM_Contribute_Form_Task {
+class CRM_Cdntaxreceiptsfr_Task_IssueSingleTaxReceipts extends CRM_Contribute_Form_Task {
 
   const MAX_RECEIPT_COUNT = 1000;
 
@@ -32,10 +32,10 @@ class CRM_Cdntaxreceipts_Task_IssueSingleTaxReceipts extends CRM_Contribute_Form
 
     // count and categorize contributions
     foreach ( $this->_contributionIds as $id ) {
-      if ( cdntaxreceipts_eligibleForReceipt($id) ) {
-        list($issued_on, $receipt_id) = cdntaxreceipts_issued_on($id);
+      if ( cdntaxreceiptsfr_eligibleForReceipt($id) ) {
+        [$issued_on, $receipt_id] = cdntaxreceiptsfr_issued_on($id);
         $key = empty($issued_on) ? 'original' : 'duplicate';
-        list( $method, $email ) = cdntaxreceipts_sendMethodForContribution($id);
+        [ $method, $email ] = cdntaxreceiptsfr_sendMethodForContribution($id);
         $receipts[$key][$method]++;
       }
     }
@@ -65,7 +65,7 @@ class CRM_Cdntaxreceipts_Task_IssueSingleTaxReceipts extends CRM_Contribute_Form
     $this->assign('duplicateTotal', $duplicateTotal);
     $this->assign('receiptTotal', $receiptTotal);
 
-    $delivery_method = Civi::settings()->get('delivery_method') ?? CDNTAX_DELIVERY_PRINT_ONLY;
+    $delivery_method = Civi::settings()->get('delivery_method') ?? CDNTAX_FR_DELIVERY_PRINT_ONLY;
     $this->assign('deliveryMethod', $delivery_method);
 
     // add radio buttons
@@ -73,7 +73,7 @@ class CRM_Cdntaxreceipts_Task_IssueSingleTaxReceipts extends CRM_Contribute_Form
     $this->addElement('radio', 'receipt_option', NULL, ts('Issue tax receipts for all %1 contributions. Previously-receipted contributions will be marked \'duplicate\'.', array(1=>$receiptTotal, 'domain' => 'org.civicrm.cdntaxreceipts')), 'include_duplicates');
     $this->addRule('receipt_option', ts('Selection required', array('domain' => 'org.civicrm.cdntaxreceipts')), 'required');
 
-    if ($delivery_method != CDNTAX_DELIVERY_DATA_ONLY) {
+    if ($delivery_method != CDNTAX_FR_DELIVERY_DATA_ONLY) {
       $this->add('checkbox', 'is_preview', ts('Run in preview mode?', array('domain' => 'org.civicrm.cdntaxreceipts')));
     }
 
@@ -131,7 +131,7 @@ class CRM_Cdntaxreceipts_Task_IssueSingleTaxReceipts extends CRM_Contribute_Form
     //module_load_include('.module','civicrm_cdntaxreceipts','civicrm_cdntaxreceipts');
 
     // start a PDF to collect receipts that cannot be emailed
-    $receiptsForPrinting = cdntaxreceipts_openCollectedPDF();
+    $receiptsForPrinting = cdntaxreceiptsfr_openCollectedPDF();
 
     $emailCount = 0;
     $printCount = 0;
@@ -156,12 +156,12 @@ class CRM_Cdntaxreceipts_Task_IssueSingleTaxReceipts extends CRM_Contribute_Form
       }
 
       // 2. If Contribution is eligible for receipting, issue the tax receipt.  Otherwise ignore.
-      if ( cdntaxreceipts_eligibleForReceipt($contribution->id) ) {
+      if ( cdntaxreceiptsfr_eligibleForReceipt($contribution->id) ) {
 
-        list($issued_on, $receipt_id) = cdntaxreceipts_issued_on($contribution->id);
+        [$issued_on, $receipt_id] = cdntaxreceiptsfr_issued_on($contribution->id);
         if ( empty($issued_on) || ! $originalOnly ) {
 
-          list( $ret, $method ) = cdntaxreceipts_issueTaxReceipt( $contribution, $receiptsForPrinting, $previewMode );
+          [ $ret, $method ] = cdntaxreceiptsfr_issueTaxReceipt( $contribution, $receiptsForPrinting, $previewMode );
 
           if ( $ret == 0 ) {
             $failCount++;
@@ -207,7 +207,7 @@ class CRM_Cdntaxreceipts_Task_IssueSingleTaxReceipts extends CRM_Contribute_Form
 
     // 4. send the collected PDF for download
     // NB: This exits if a file is sent.
-    cdntaxreceipts_sendCollectedPDF($receiptsForPrinting, 'Receipts-To-Print-' . (int) $_SERVER['REQUEST_TIME'] . '.pdf');  // EXITS.
+    cdntaxreceiptsfr_sendCollectedPDF($receiptsForPrinting, 'Receipts-To-Print-' . (int) $_SERVER['REQUEST_TIME'] . '.pdf');  // EXITS.
   }
 }
 

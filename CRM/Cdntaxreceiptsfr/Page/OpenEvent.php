@@ -2,7 +2,7 @@
 
 require_once 'CRM/Core/Page.php';
 
-class CRM_Cdntaxreceipts_Page_OpenEvent extends CRM_Core_Page {
+class CRM_Cdntaxreceiptsfr_Page_OpenEvent extends CRM_Core_Page {
 
   function run() {
     
@@ -12,7 +12,7 @@ class CRM_Cdntaxreceipts_Page_OpenEvent extends CRM_Core_Page {
       exit();
     }
 
-    cdntaxreceipts_process_open($tracking_id);
+    cdntaxreceiptsfr_process_open($tracking_id);
 
     global $civicrm_root;
     $filename = $civicrm_root . "/i/tracker.gif";

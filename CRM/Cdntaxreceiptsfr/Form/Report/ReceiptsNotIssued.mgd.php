@@ -6,14 +6,14 @@
 return array (
   0 => 
   array (
-    'name' => 'CRM_Cdntaxreceipts_Form_Report_ReceiptsNotIssued',
+    'name' => 'CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued',
     'entity' => 'ReportTemplate',
     'params' => 
     array (
       'version' => 3,
       'label' => 'Tax Receipts - Receipts Not Issued',
       'description' => 'Tax Receipts - Receipts Not Issued (org.civicrm.cdntaxreceipts)',
-      'class_name' => 'CRM_Cdntaxreceipts_Form_Report_ReceiptsNotIssued',
+      'class_name' => 'CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued',
       'report_url' => 'cdntaxreceipts/receiptsnotissued',
       'component' => 'CiviContribute',
     ),

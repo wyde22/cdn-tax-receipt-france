@@ -1,11 +1,11 @@
 <?php
 
-use CRM_Cdntaxreceipts_ExtensionUtil as E;
+use CRM_Cdntaxreceiptsfr_ExtensionUtil as E;
 
 /**
  * Collection of upgrade steps
  */
-class CRM_Cdntaxreceipts_Upgrader extends CRM_Cdntaxreceipts_Upgrader_Base {
+class CRM_Cdntaxreceiptsfr_Upgrader extends CRM_Cdntaxreceiptsfr_Upgrader_Base {
 
   // By convention, functions that look like "function upgrade_NNNN()" are
   // upgrade tasks. They are executed in order (like Drupal's hook_update_N).
@@ -213,7 +213,7 @@ AND COLUMN_NAME = 'receipt_status'");
 
     if ($financialType->find(TRUE)) {
       try {
-        CRM_Cdntaxreceipts_Upgrader::createDefaultFinancialAccounts($financialType);
+        CRM_Cdntaxreceiptsfr_Upgrader::createDefaultFinancialAccounts($financialType);
       }
       catch (Exception $e) {
       }
@@ -231,7 +231,7 @@ AND COLUMN_NAME = 'receipt_status'");
     }
     else {
       // Create Inkind financial type and fields
-      cdntaxreceipts_configure_inkind_fields();
+      cdntaxreceiptsfr_configure_inkind_fields();
     }
 
     return TRUE;

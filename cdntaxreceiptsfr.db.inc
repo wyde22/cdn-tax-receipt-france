@@ -5,13 +5,13 @@
  */
 
 /**
- * cdntaxreceipts_issued_on
+ * cdntaxreceiptsfr_issued_on
  *
  * Return unix timestamp of when the contribution was first issued
  * This checks both 'single' and 'annual' receipts.
  */
 
-function cdntaxreceipts_issued_on($contribution_id) {
+function cdntaxreceiptsfr_issued_on($contribution_id) {
 
   $sql = "SELECT issued_on, l.id as receipt_id FROM cdntaxreceipts_log l
     INNER JOIN cdntaxreceipts_log_contributions c ON l.id = c.receipt_id
@@ -28,13 +28,13 @@ function cdntaxreceipts_issued_on($contribution_id) {
 }
 
 /**
- * cdntaxreceipts_annual_issued_on
+ * cdntaxreceiptsfr_annual_issued_on
  *
  * Returns list($issued_on, receipt_id) of when an annual receipt was issued for the given contact and year.
  * (NULL,NULL) if no annual receipt has been issued.
  */
 
-function cdntaxreceipts_annual_issued_on($contactId, $year) {
+function cdntaxreceiptsfr_annual_issued_on($contactId, $year) {
 
   $sql = "SELECT issued_on, l.id as receipt_id FROM cdntaxreceipts_log l
     INNER JOIN cdntaxreceipts_log_contributions c ON l.id = c.receipt_id
@@ -50,7 +50,7 @@ function cdntaxreceipts_annual_issued_on($contactId, $year) {
   }
 
 }/**
- * cdntaxreceipts_all_issued_on
+ * cdntaxreceiptsfr_all_issued_on
  *
  * Return all records of when the contribution was receipted
  * This checks 'single', 'annual' and 'aggregate' receipts.
@@ -58,7 +58,7 @@ function cdntaxreceipts_annual_issued_on($contactId, $year) {
  * @param $contribution_id - the contribution being looked up
  */
 
-function cdntaxreceipts_all_issued_on($contribution_id) {
+function cdntaxreceiptsfr_all_issued_on($contribution_id) {
 
   $issued_on = array();
 
@@ -86,7 +86,7 @@ function cdntaxreceipts_all_issued_on($contribution_id) {
 }
 
 
-function cdntaxreceipts_contributions_not_receipted($contactId, $year) {
+function cdntaxreceiptsfr_contributions_not_receipted($contactId, $year) {
 
   $sql = "SELECT contrib.id as contribution_id, contrib.total_amount,
         ifnull(contrib.non_deductible_amount, 0) as non_deductible_amount, contrib.receive_date
@@ -107,7 +107,7 @@ function cdntaxreceipts_contributions_not_receipted($contactId, $year) {
   // lot of database calls versus loading each contribution object individually.
 
   while ( $dao->fetch() ) {
-    if ( cdntaxreceipts_eligibleForReceipt($dao->contribution_id) ) {
+    if ( cdntaxreceiptsfr_eligibleForReceipt($dao->contribution_id) ) {
       $contributions[] = array(
         'contribution_id' => $dao->contribution_id,
         'total_amount' => $dao->total_amount,
@@ -121,12 +121,12 @@ function cdntaxreceipts_contributions_not_receipted($contactId, $year) {
 }
 
 /**
- * cdntaxreceipts_load_receipt
+ * cdntaxreceiptsfr_load_receipt
  *
  * Return associative array of receipt details for the given receipt_id
  */
 
-function cdntaxreceipts_load_receipt($receipt_id) {
+function cdntaxreceiptsfr_load_receipt($receipt_id) {
   $receipt = array();
   if (!isset($receipt_id)) {
     return $receipt;
@@ -155,7 +155,7 @@ function cdntaxreceipts_load_receipt($receipt_id) {
       'uname' => $issued_by['uf_name'] . ' (' . $dao->uid . ')',
       'ip' => $dao->ip,
       'issue_type' => $dao->issue_type,
-      'display_type' => _cdntaxreceipts_get_display_type($dao->issue_type),
+      'display_type' => _cdntaxreceiptsfr_get_display_type($dao->issue_type),
       'issue_method' => $dao->issue_method,
       'receipt_status' => $dao->receipt_status,
       'email_tracking_id' => $dao->email_tracking_id,
@@ -180,13 +180,13 @@ function cdntaxreceipts_load_receipt($receipt_id) {
 }
 
 /**
- * cdntaxreceipts_log
+ * cdntaxreceiptsfr_log
  *
  * Log the issuance
  */
 
  //TODO: Should return success or failure
-function cdntaxreceipts_log(&$receipt) {
+function cdntaxreceiptsfr_log(&$receipt) {
 
   $uid = CRM_Utils_System::getLoggedInUfID();
   $uid = empty($uid) ? 1 : $uid;
@@ -247,7 +247,7 @@ function cdntaxreceipts_log(&$receipt) {
 }
 
 /**
- * cdntaxreceipts_cancel
+ * cdntaxreceiptsfr_cancel
  *
  * @param int $receipt_id
  * @return int $receipt_id
@@ -255,7 +255,7 @@ function cdntaxreceipts_log(&$receipt) {
  * Cancel the receipt
  */
 
-function cdntaxreceipts_cancel($receipt_id) {
+function cdntaxreceiptsfr_cancel($receipt_id) {
 
   // create the main entry
   $params = array(
@@ -286,7 +286,7 @@ function cdntaxreceipts_cancel($receipt_id) {
  *   'receipt_id' => $dao->receipt_id,
 );
  */
-function cdntaxreceipts_contributions_get_status($contributionIds = array()) {
+function cdntaxreceiptsfr_contributions_get_status($contributionIds = array()) {
   $contributions = array();
 
   $ids = implode(',', $contributionIds);
@@ -313,7 +313,7 @@ function cdntaxreceipts_contributions_get_status($contributionIds = array()) {
     while ($dao->fetch()) {
       $id = $dao->contribution_id;
 
-      $eligible = cdntaxreceipts_eligibleForReceipt($id);
+      $eligible = cdntaxreceiptsfr_eligibleForReceipt($id);
       $contributions[$id] = array(
         'contribution_id' => $id,
         'contact_id' => $dao->contact_id,
@@ -327,7 +327,7 @@ function cdntaxreceipts_contributions_get_status($contributionIds = array()) {
     }
   }
   foreach ($contributions as $id => $contrib) {
-    $contributions[$id]['non_deductible_amount'] = $contributions[$id]['total_amount'] - cdntaxreceipts_eligibleAmount($id);
+    $contributions[$id]['non_deductible_amount'] = $contributions[$id]['total_amount'] - cdntaxreceiptsfr_eligibleAmount($id);
   }
 
   return $contributions;
@@ -337,7 +337,7 @@ function cdntaxreceipts_contributions_get_status($contributionIds = array()) {
  * Record a tax receipt as having been opened by the email
  * recipient.
  */
-function cdntaxreceipts_process_open($tracking_id) {
+function cdntaxreceiptsfr_process_open($tracking_id) {
 
   $sql = "
 UPDATE cdntaxreceipts_log
@@ -349,20 +349,20 @@ WHERE email_tracking_id = %1 AND email_opened IS NULL";
 }
 
 /*
- * cdntaxreceipts_log_next_id()
+ * cdntaxreceiptsfr_log_next_id()
  *
  * Get the next id to be generated in the log table.
  * Assumes that this table has an autoincrement id field.
  * Does not deal with locking issue.
  */
-function cdntaxreceipts_log_next_id() {
+function cdntaxreceiptsfr_log_next_id() {
   $sql = "SELECT id FROM cdntaxreceipts_log ORDER BY id DESC LIMIT 1";
   $last_id = CRM_Core_DAO::singleValueQuery($sql);
   return $last_id + 1;
 }
 
-function cdntaxreceipts_advantage($id, $desc = NULL, &$defaults = [], $view = FALSE) {
-  $advantage = new CRM_Cdntaxreceipts_DAO_CdnAdvantage;
+function cdntaxreceiptsfr_advantage($id, $desc = NULL, &$defaults = [], $view = FALSE) {
+  $advantage = new CRM_Cdntaxreceiptsfr_DAO_CdnAdvantage;
   $advantage->contribution_id = $id;
   $advantage->find(TRUE);
   if ($view) {

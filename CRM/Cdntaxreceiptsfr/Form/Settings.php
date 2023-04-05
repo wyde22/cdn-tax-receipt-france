@@ -1,14 +1,14 @@
 <?php
 
 require_once 'CRM/Core/Form.php';
-require_once 'cdntaxreceipts.functions.inc';
+require_once 'cdntaxreceiptsfr.functions.inc';
 
 /**
  * Form controller class
  *
  * @see http://wiki.civicrm.org/confluence/display/CRMDOC43/QuickForm+Reference
  */
-class CRM_Cdntaxreceipts_Form_Settings extends CRM_Core_Form {
+class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
 
   CONST SETTINGS = 'CDNTaxReceipts';
 
@@ -110,7 +110,7 @@ class CRM_Cdntaxreceipts_Form_Settings extends CRM_Core_Form {
       $this->add('text', 'receipt_prefix', ts('Receipt Prefix', array('domain' => 'org.civicrm.cdntaxreceipts')));
       $this->add('text', 'receipt_authorized_signature_text', ts('Authorized Signature Text', array('domain' => 'org.civicrm.cdntaxreceipts')));
 
-      $uploadSize = cdntaxreceipts_getCiviSetting('maxFileSize');
+      $uploadSize = cdntaxreceiptsfr_getCiviSetting('maxFileSize');
       if ($uploadSize >= 8 ) {
         $uploadSize = 8;
       }
@@ -139,7 +139,7 @@ class CRM_Cdntaxreceipts_Form_Settings extends CRM_Core_Form {
           'select',
           'modeltemp',
           'Modèle message',
-          cdntaxreceipt_getModelMessage(),
+          cdntaxreceiptfr_getModelMessage(),
           TRUE,
           array('class' => 'crm-select2','data-attributes' => 'selectModelTemp')
         );
@@ -188,9 +188,9 @@ class CRM_Cdntaxreceipts_Form_Settings extends CRM_Core_Form {
       $this->addElement('checkbox', 'issue_inkind', ts('Setup in-kind receipts?', array('domain' => 'org.civicrm.cdntaxreceipts')));
 
       $delivery_options = array();
-      $delivery_options[] = $this->createElement('radio', NULL, NULL, 'Print only', CDNTAX_DELIVERY_PRINT_ONLY);
-      $delivery_options[] = $this->createElement('radio', NULL, NULL, 'Email or print', CDNTAX_DELIVERY_PRINT_EMAIL);
-      $delivery_options[] = $this->createElement('radio', NULL, NULL, 'Data only', CDNTAX_DELIVERY_DATA_ONLY);
+      $delivery_options[] = $this->createElement('radio', NULL, NULL, 'Print only', CDNTAX_FR_DELIVERY_PRINT_ONLY);
+      $delivery_options[] = $this->createElement('radio', NULL, NULL, 'Email or print', CDNTAX_FR_DELIVERY_PRINT_EMAIL);
+      $delivery_options[] = $this->createElement('radio', NULL, NULL, 'Data only', CDNTAX_FR_DELIVERY_DATA_ONLY);
       $this->addGroup($delivery_options, 'delivery_method', ts('Delivery Method', array('domain' => 'org.civicrm.cdntaxreceipts')));
       $this->addRule('delivery_method', 'Delivery Method', 'required');
 
@@ -208,7 +208,7 @@ class CRM_Cdntaxreceipts_Form_Settings extends CRM_Core_Form {
     else if ( $mode == 'defaults' ) {
       $defaults = array(
         'issue_inkind' => 0,
-        'delivery_method' => Civi::settings()->get('delivery_method') ?? CDNTAX_DELIVERY_PRINT_ONLY,
+        'delivery_method' => Civi::settings()->get('delivery_method') ?? CDNTAX_FR_DELIVERY_PRINT_ONLY,
         'attach_to_workflows' => Civi::settings()->get('attach_to_workflows') ?? 0,
         'enable_advanced_eligibility_report' => Civi::settings()->get('enable_advanced_eligibility_report') ?? 0,
       );
@@ -221,7 +221,7 @@ class CRM_Cdntaxreceipts_Form_Settings extends CRM_Core_Form {
       Civi::settings()->set('enable_advanced_eligibility_report', $values['enable_advanced_eligibility_report']);
       if (isset($values['issue_inkind']) == TRUE) {
         if ( $values['issue_inkind'] == 1 ) {
-          cdntaxreceipts_configure_inkind_fields();
+          cdntaxreceiptsfr_configure_inkind_fields();
         }
       }
     }
@@ -253,7 +253,7 @@ class CRM_Cdntaxreceipts_Form_Settings extends CRM_Core_Form {
      * If your form requires special validation, add one or more callbacks here
      */
     public function addRules() {
-        $this->addFormRule(array('CRM_Cdntaxreceipts_Form_Settings', 'myRules'));
+        $this->addFormRule(array('CRM_Cdntaxreceiptsfr_Form_Settings', 'myRules'));
     }
     
     /**

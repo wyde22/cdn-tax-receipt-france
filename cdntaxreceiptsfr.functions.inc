@@ -1,6 +1,6 @@
 <?php
 
-use CRM_Cdntaxreceipts_ExtensionUtil as E;
+use CRM_Cdntaxreceiptsfr_ExtensionUtil as E;
 
 require_once('FPDI/src/autoload.php');
 
@@ -14,7 +14,7 @@ require_once('FPDI/src/autoload.php');
      * include a background template for every page
      */
     function Header() {
-      $pdf_template_file = _cdntaxreceipts_get_image_filepath('receipt_pdftemplate');
+      $pdf_template_file = _cdntaxreceiptsfr_get_image_filepath('receipt_pdftemplate');
       if (!empty($pdf_template_file)) {
 
         if (is_null($this->_tplIdx)) {
@@ -33,10 +33,10 @@ require_once('FPDI/src/autoload.php');
 
 
 
-  const CDNTAX_SETTINGS = 'CDNTaxReceipts';
-  const CDNTAX_DELIVERY_PRINT_ONLY = 0;
-  const CDNTAX_DELIVERY_PRINT_EMAIL = 1;
-  const CDNTAX_DELIVERY_DATA_ONLY = 2;
+  const CDNTAX_FR_SETTINGS            = 'CDNTaxReceiptsfr';
+  const CDNTAX_FR_DELIVERY_PRINT_ONLY = 0;
+  const CDNTAX_FR_DELIVERY_PRINT_EMAIL   = 1;
+  const CDNTAX_FR_DELIVERY_DATA_ONLY = 2;
 
 /**
  * processTaxReceipt()
@@ -48,27 +48,27 @@ require_once('FPDI/src/autoload.php');
  *
  * This method is common to both single and annual receipts.
  */
-function cdntaxreceipts_processTaxReceipt($receipt, &$collectedPdf = NULL, $mode = NULL, $method = NULL) {
+function cdntaxreceiptsfr_processTaxReceipt($receipt, &$collectedPdf = NULL, $mode = NULL, $method = NULL) {
 
   // Get contact details
-  list($displayname, $email) = CRM_Contact_BAO_Contact::getContactDetails($receipt['contact_id']);
+  [$displayname, $email] = CRM_Contact_BAO_Contact::getContactDetails($receipt['contact_id']);
 
   // add support for preferred language
   $old_locale = CRM_Core_I18n::singleton()->getLocale();
   $preferred_language = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $receipt['contact_id'], 'preferred_language');
-  _cdntaxreceipts_setReceiptanguage($preferred_language);
+  _cdntaxreceiptsfr_setReceiptanguage($preferred_language);
 
   // allow modules to alter any details
   // invoke hook_cdntaxreceipts_alter_receipt(&$receipt)
   //   modules should accept a reference to the $receipt array and alter it directly if they wish
   //   one useful use case: alter the $receipt['source'] line to include custom text
   //   to alter receipt amount, use hook_cdntaxreceipts_eligibleAmount() instead
-  CRM_Utils_Hook::singleton()->invoke(['receipt'], $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceipts_alter_receipt');
+  CRM_Utils_Hook::singleton()->invoke(['receipt'], $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_alter_receipt');
 
   // Log the receipt
   // Must be done before the PDF formatting in order to get the receipt_no if sequential
-  if (!$receipt['is_duplicate'] && $mode != CDNTAXRECEIPTS_MODE_PREVIEW) {
-    cdntaxreceipts_log($receipt);
+  if (!$receipt['is_duplicate'] && $mode != CDNTAXRECEIPTS_FR_MODE_PREVIEW) {
+    cdntaxreceiptsfr_log($receipt);
   }
 
   if ($receipt['issue_method'] == 'data') {
@@ -78,9 +78,9 @@ function cdntaxreceipts_processTaxReceipt($receipt, &$collectedPdf = NULL, $mode
   }
   else {
     // generate the PDF file
-    list($pdf_file, $user_friendly) = cdntaxreceipts_generateFormattedReceipt($receipt, $collectedPdf, $mode);
+    [$pdf_file, $user_friendly] = cdntaxreceiptsfr_generateFormattedReceipt($receipt, $collectedPdf, $mode);
 
-    if ($mode == CDNTAXRECEIPTS_MODE_PREVIEW) {
+    if ($mode == CDNTAXRECEIPTS_FR_MODE_PREVIEW) {
       // no email, just PDF
       $sent = TRUE;
     }
@@ -118,7 +118,7 @@ function cdntaxreceipts_processTaxReceipt($receipt, &$collectedPdf = NULL, $mode
       );
 
       $sendTemplateParams = array(
-        'groupName' => 'msg_tpl_workflow_cdntaxreceipts',
+        'groupName' => 'msg_tpl_workflow_cdntaxreceiptsfr',
         'contactId' => $receipt['contact_id'],
         'tplParams' => $tplParams,
         'from' => $org_name . ' <' . $email_from . '> ',
@@ -127,22 +127,22 @@ function cdntaxreceipts_processTaxReceipt($receipt, &$collectedPdf = NULL, $mode
       );
 
       if ($receipt['issue_type'] == 'single') {
-        $sendTemplateParams['valueName'] = 'cdntaxreceipts_receipt_single';
+        $sendTemplateParams['valueName'] = 'cdntaxreceiptsfr_receipt_single';
       }
       else {
-        $sendTemplateParams['valueName'] = 'cdntaxreceipts_receipt_aggregate';
+        $sendTemplateParams['valueName'] = 'cdntaxreceiptsfr_receipt_aggregate';
       }
 
       // send a copy (without open tracking) to the tax archive
       $sendTemplateParams['toEmail'] = $email_archive;
-      list($sent, $subject, $message, $html) = CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
+      [$sent, $subject, $message, $html] = CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
 
       // send a copy (with open tracking) to the donor
-      if ($sent && $receipt['issue_method'] == 'email' && $mode != CDNTAXRECEIPTS_MODE_WORKFLOW) {
+      if ($sent && $receipt['issue_method'] == 'email' && $mode != CDNTAXRECEIPTS_FR_MODE_WORKFLOW) {
         $sendTemplateParams['toEmail'] = $contact['email'];
         $sendTemplateParams['tplParams']['openTracking'] = "<img src=\"" . CRM_Utils_System::baseURL() .
           "civicrm/cdntaxreceipts/open?r={$receipt['email_tracking_id']}\" width='1' height='1' alt='' border='0'>";
-        list($sent, $subject, $message, $html) = CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
+        [$sent, $subject, $message, $html] = CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
       }
     }
   }
@@ -165,11 +165,11 @@ function cdntaxreceipts_processTaxReceipt($receipt, &$collectedPdf = NULL, $mode
  * This function should always be called through processTaxReceipt().  It is imperative
  * that each receipt generated by the system gets logged and archived properly.
  */
-function cdntaxreceipts_generateFormattedReceipt($receipt, &$collectedPdf = NULL, $mode = NULL) {
+function cdntaxreceiptsfr_generateFormattedReceipt($receipt, &$collectedPdf = NULL, $mode = NULL) {
 
   $pdf_img_files_path = dirname(__FILE__) . '/img/';
 
-  $address = cdntaxreceipts_getAddress($receipt['contact_id']);
+  $address = cdntaxreceiptsfr_getAddress($receipt['contact_id']);
 
   $address_line_1 = isset($address['street_address']) ? $address['street_address'] : '';
   $parts = array();
@@ -182,7 +182,7 @@ function cdntaxreceipts_generateFormattedReceipt($receipt, &$collectedPdf = NULL
   $address_line_2 = implode(' ', $parts);
   $address_line_3 = isset($address['country']) ? $address['country'] : '';
 
-  list($displayname, $email) = CRM_Contact_BAO_Contact::getContactDetails($receipt['contact_id']);
+  [$displayname, $email] = CRM_Contact_BAO_Contact::getContactDetails($receipt['contact_id']);
 
   $result_get_name = civicrm_api3('Contact', 'get', array(
     'sequential' => 1,
@@ -241,7 +241,7 @@ function cdntaxreceipts_generateFormattedReceipt($receipt, &$collectedPdf = NULL
 //
 //    $context = ['contactId' => $receipt['contact_id'], 'contributionId' => $contributionId];
 //
-    $path = CRM_Cdntaxreceipts_Utils_DownloadPdfRecuFiscaux::downloadOutputPDF(145,$context,$user_friendly);
+    $path = CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux::downloadOutputPDF(145,$context,$user_friendly);
   
   //$pdf = new PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
   //$pdf->Open();
@@ -311,7 +311,7 @@ function cdntaxreceipts_generateFormattedReceipt($receipt, &$collectedPdf = NULL
   return array($path, $user_friendly);
 }
 
-function _cdntaxreceipts_writePage(&$f, $pdf_variables, $receipt) {
+function _cdntaxreceiptsfr_writePage(&$f, $pdf_variables, $receipt) {
 
   //
   // hook_cdntaxreceipts_writeReceipt(&$pdf, $pdf_variables, $receipt)
@@ -330,21 +330,21 @@ function _cdntaxreceipts_writePage(&$f, $pdf_variables, $receipt) {
   //
 
   $pdf_variables['thankyou_note'] = true; 
-  $results = CRM_Utils_Hook::singleton()->invoke(3, $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceipts_writeReceipt');
+  $results = CRM_Utils_Hook::singleton()->invoke(3, $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_writeReceipt');
   $pdf_variables['thankyou_note'] = false; 
 
   // if custom rewrite is implemented
   // don't execute _cdntaxreceipts_writeReceipt 
   // as it will overwrite the pdf
   if(isset($pdf_variables) && $pdf_variables['is_custom_rewrite'] == TRUE) {
-    if(!$pdf_variables['is_duplicate'] && $pdf_variables["mode"] !== CDNTAXRECEIPTS_MODE_PREVIEW) {
+    if(!$pdf_variables['is_duplicate'] && $pdf_variables["mode"] !== CDNTAXRECEIPTS_FR_MODE_PREVIEW) {
       $pdf_variables['duplicate_offset'] = TRUE;
-      CRM_Utils_Hook::singleton()->invoke(3, $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceipts_writeReceipt');
+      CRM_Utils_Hook::singleton()->invoke(3, $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_writeReceipt');
     }
     if($pdf_variables['is_duplicate']) {
       $pdf_variables['is_duplicate'] = TRUE;
       $pdf_variables['duplicate_offset'] = TRUE;
-      CRM_Utils_Hook::singleton()->invoke(3, $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceipts_writeReceipt');
+      CRM_Utils_Hook::singleton()->invoke(3, $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_writeReceipt');
     }   
     return;
     
@@ -361,22 +361,22 @@ function _cdntaxreceipts_writePage(&$f, $pdf_variables, $receipt) {
   // if no custom function, go with default formatting...
   if ($pdf_variables['is_duplicate']) {
     // print duplicate copy
-    _cdntaxreceipts_writeReceipt($f, $pdf_variables);
+    _cdntaxreceiptsfr_writeReceipt($f, $pdf_variables);
   }
   else {
     // print original AND duplicate copy
     $mymargin_top = $pdf_variables['mymargin_top'];
-    _cdntaxreceipts_writeReceipt($f, $pdf_variables);
+    _cdntaxreceiptsfr_writeReceipt($f, $pdf_variables);
     $pdf_variables["mymargin_top"] = $mymargin_top + 100;
     $pdf_variables["is_duplicate"] = TRUE;
-    _cdntaxreceipts_writeReceipt($f, $pdf_variables);
+    _cdntaxreceiptsfr_writeReceipt($f, $pdf_variables);
     $pdf_variables["mymargin_top"] = $mymargin_top + 100*2;
     $pdf_variables["is_duplicate"] = TRUE;
-    _cdntaxreceipts_writeReceipt($f, $pdf_variables);
+    _cdntaxreceiptsfr_writeReceipt($f, $pdf_variables);
   }
 }
 
-function _cdntaxreceipts_writeReceipt(&$pdf, $pdf_variables) {
+function _cdntaxreceiptsfr_writeReceipt(&$pdf, $pdf_variables) {
 
   // Extract variables
   $mode = $pdf_variables["mode"];
@@ -405,7 +405,7 @@ function _cdntaxreceipts_writeReceipt(&$pdf, $pdf_variables) {
   $contribution_amount = $pdf_variables['contribution_amount'];
 
   // Middle center section
-  if ($mode == CDNTAXRECEIPTS_MODE_PREVIEW) {
+  if ($mode == CDNTAXRECEIPTS_FR_MODE_PREVIEW) {
     $pdf->Image($pdf_img_files_path . 'preview_mode.png', $mymargin_left + 65, $mymargin_top, '', 45);
   }
   else if ($receipt_status == 'cancelled') {
@@ -415,9 +415,9 @@ function _cdntaxreceipts_writeReceipt(&$pdf, $pdf_variables) {
     $pdf->Image($pdf_img_files_path . 'duplicate_trans.png', $mymargin_left + 65, $mymargin_top, '', 45);
   }
   // Top left section
-  $pdf_template_file = _cdntaxreceipts_get_image_filepath('receipt_pdftemplate');
+  $pdf_template_file = _cdntaxreceiptsfr_get_image_filepath('receipt_pdftemplate');
   if (empty($pdf_template_file)) {
-    $receipt_logo = _cdntaxreceipts_get_image_filepath('receipt_logo');
+    $receipt_logo = _cdntaxreceiptsfr_get_image_filepath('receipt_logo');
     if ( empty($receipt_logo) ) {
       $receipt_logo = $pdf_img_files_path . 'your-logo.png';
     }
@@ -456,23 +456,23 @@ function _cdntaxreceipts_writeReceipt(&$pdf, $pdf_variables) {
   // Right section
   $x_detailscolumn = 120;
   $y_detailscolumnstart = 22;
-  $pdf_template_file = _cdntaxreceipts_get_image_filepath('receipt_pdftemplate');
+  $pdf_template_file = _cdntaxreceiptsfr_get_image_filepath('receipt_pdftemplate');
   if (empty($pdf_template_file)) {
-    $background_image = _cdntaxreceipts_get_image_filepath('receipt_watermark');
+    $background_image = _cdntaxreceiptsfr_get_image_filepath('receipt_watermark');
     if ($background_image) {
       $pdf->Image($background_image, $mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 6, '', 40);
     }
   }
   $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 6);
   $pdf->SetFont('Helvetica', 'B', 8);
-  $pdf->Write(10, ts("Issue Date: %1", array(1 => $issued_on, 'domain' => 'org.civicrm.cdntaxreceipts')));
+  $pdf->Write(10, ts("Issue Date: %1", array(1 => $issued_on, 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
   $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 12);
-  $pdf->Write(10, ts("Received on: %1", array(1 => $display_date, 'domain' => 'org.civicrm.cdntaxreceipts')));
+  $pdf->Write(10, ts("Received on: %1", array(1 => $display_date, 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
   $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 18);
-  $pdf->Write(10, ts("Eligible Amount:  $%1", array(1 => number_format($amount, 2), 'domain' => 'org.civicrm.cdntaxreceipts')));
+  $pdf->Write(10, ts("Eligible Amount:  $%1", array(1 => number_format($amount, 2), 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
   $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 24);
   // JMA Addition
-  $pdf->Write(10, ts("Total Amount:  $%1", array(1 => number_format($contribution_amount, 2), 'domain' => 'org.civicrm.cdntaxreceipts')));
+  $pdf->Write(10, ts("Total Amount:  $%1", array(1 => number_format($contribution_amount, 2), 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
   $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 34);
 
   if ($issue_type == 'annual') {
@@ -501,10 +501,10 @@ function _cdntaxreceipts_writeReceipt(&$pdf, $pdf_variables) {
   // Left section
   $pdf->SetFont('Helvetica', 'B', 8);
   $pdf->SetY($mymargin_top + $y_detailscolumnstart + 6);
-  $pdf->Write(10, ts("Receipt No: %1", array(1 => $receipt_number, 'domain' => 'org.civicrm.cdntaxreceipts')));
+  $pdf->Write(10, ts("Receipt No: %1", array(1 => $receipt_number, 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
   $pdf->SetFont('Helvetica', 'B', 8);
   $pdf->SetY($mymargin_top + $y_detailscolumnstart + 10);
-  $pdf->Write(10, ts("Received from: ", array('domain' => 'org.civicrm.cdntaxreceipts')), '', 0, 'L', TRUE, 0, FALSE, FALSE, 0);
+  $pdf->Write(10, ts("Received from: ", array('domain' => 'org.civicrm.cdntaxreceiptsfr')), '', 0, 'L', TRUE, 0, FALSE, FALSE, 0);
   $pdf->SetFont('Helvetica', 'B', 10);
   $pdf->SetXY($mymargin_left+10, $mymargin_top + $y_detailscolumnstart + 20);
   $pdf->Write(10, strtoupper($displayname), '', 0, 'L', TRUE, 0, FALSE, FALSE, 0);
@@ -534,11 +534,11 @@ function _cdntaxreceipts_writeReceipt(&$pdf, $pdf_variables) {
   // If this is an in-kind donation
   if ( !empty($inkind_values) ) {
     $valueAdvantage = ts('Value of advantage to:');
-    $inkind_str = ts('Donation In Kind: %1', array(1 => $inkind_values[0], 'domain' => 'org.civicrm.cdntaxreceipts'));
+    $inkind_str = ts('Donation In Kind: %1', array(1 => $inkind_values[0], 'domain' => 'org.civicrm.cdntaxreceiptsfr'));
 
     if (!empty($inkind_values[3])) {
       if ($inkind_values[3] < $amount) {
-          $inkind_str .= ' - ' . ts('Cost: $%1', array(1 => $inkind_values[3], 'domain' => 'org.civicrm.cdntaxreceipts'));
+          $inkind_str .= ' - ' . ts('Cost: $%1', array(1 => $inkind_values[3], 'domain' => 'org.civicrm.cdntaxreceiptsfr'));
       }
     }
 
@@ -549,13 +549,13 @@ function _cdntaxreceipts_writeReceipt(&$pdf, $pdf_variables) {
     $pdf->SetFont('Helvetica', 'B', 8);
     $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 30);
 
-    $pdf->Write(10, ts("Appraiser: %1", array(1 => $inkind_values[1], 'domain' => 'org.civicrm.cdntaxreceipts')));
+    $pdf->Write(10, ts("Appraiser: %1", array(1 => $inkind_values[1], 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
     $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 34);
 
     if (!empty($inkind_values[2])) {
       $addressString = wordwrap($inkind_values[2], 20, CRM_Core_DAO::VALUE_SEPARATOR);
       $lines = explode(CRM_Core_DAO::VALUE_SEPARATOR, $addressString);
-      $pdf->Write(10, ts("Address of Appraiser: %1", array(1 => $lines[0], 'domain' => 'org.civicrm.cdntaxreceipts')));
+      $pdf->Write(10, ts("Address of Appraiser: %1", array(1 => $lines[0], 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
       $pdf->SetXY($mymargin_left + $x_detailscolumn + 30, $mymargin_top + $y_detailscolumnstart + 38);
       foreach ($lines as $key => $line) {
         if ($key) {
@@ -588,20 +588,20 @@ function _cdntaxreceipts_writeReceipt(&$pdf, $pdf_variables) {
     $pdf->Write(10, $line_1, '', 0, 'L', TRUE, 0, FALSE, FALSE, 0);
     $pdf->SetFont('Helvetica', '', 8);
     $pdf->SetY($mymargin_top + 86, 0, 'L', TRUE, 0, FALSE, FALSE, 0);
-    $pdf->Write(10, ts('Canada Revenue Agency: canada.ca/charities-giving', array('domain' => 'org.civicrm.cdntaxreceipts')));
+    $pdf->Write(10, ts('Canada Revenue Agency: canada.ca/charities-giving', array('domain' => 'org.civicrm.cdntaxreceiptsfr')));
 
     // Bottom center section
     $pdf->SetFont('Helvetica', 'B', 8);
     $pdf->SetXY($mymargin_left + 92, $mymargin_top + 82);
-    $pdf->Write(10, ts('Thank you!', array('domain' => 'org.civicrm.cdntaxreceipts')));
+    $pdf->Write(10, ts('Thank you!', array('domain' => 'org.civicrm.cdntaxreceiptsfr')));
 
     // Bottom right section
     $signature = Civi::settings()->get('receipt_authorized_signature_text');
     if ( $signature == '' ) {
-      $signature = ts('Authorized Signature', array('domain' => 'org.civicrm.cdntaxreceipts'));
+      $signature = ts('Authorized Signature', array('domain' => 'org.civicrm.cdntaxreceiptsfr'));
     }
     $sig_offset = strlen($signature) - 20;
-    $sig_image = _cdntaxreceipts_get_image_filepath('receipt_signature');
+    $sig_image = _cdntaxreceiptsfr_get_image_filepath('receipt_signature');
     if (empty($sig_image)) {
       $sig_image = $pdf_img_files_path . 'authorized-signature.png';
     }
@@ -623,7 +623,7 @@ function _cdntaxreceipts_writeReceipt(&$pdf, $pdf_variables) {
 /**
  * set up the custom field structure for In-Kind tax receipts
  */
-function cdntaxreceipts_configure_inkind_fields() {
+function cdntaxreceiptsfr_configure_inkind_fields() {
   // check if the In-kind contribution type exists.  if not, create it.
   $inkind_financial_type = \Civi\Api4\FinancialType::get(FALSE)->addSelect('id')->addWhere('name', '=', 'In-kind')->execute()->first();
   if (empty($inkind_financial_type)) {
@@ -706,7 +706,8 @@ function cdntaxreceipts_configure_inkind_fields() {
  * Issues a tax receipt for a single contribution.
  * Detects if the receipt is a duplicate and reacts appropriately.
  */
-function cdntaxreceipts_issueTaxReceipt($contribution, &$collectedPdf = NULL, $mode = CDNTAXRECEIPTS_MODE_BACKOFFICE, $printOverride = NULL) {
+function cdntaxreceiptsfr_issueTaxReceipt($contribution, &$collectedPdf = NULL, $mode = CDNTAXRECEIPTS_FR_MODE_BACKOFFICE,
+  $printOverride = NULL) {
 
   // This function basically needs to set up a $receipt[] array and pass it to
   // processTaxReceipt() which does the hard work
@@ -714,7 +715,7 @@ function cdntaxreceipts_issueTaxReceipt($contribution, &$collectedPdf = NULL, $m
 
   // check if a Tax Receipt has already been issued previously for this Contribution
   // user input could be tainted! we want this method to check everything for validity...
-  list($issued_on, $receipt_id) = cdntaxreceipts_issued_on($contribution->id);
+  [$issued_on, $receipt_id] = cdntaxreceiptsfr_issued_on($contribution->id);
 
   // When returning issued_on field:
   //   returns false for non existing $contribution ID
@@ -725,17 +726,17 @@ function cdntaxreceipts_issueTaxReceipt($contribution, &$collectedPdf = NULL, $m
 
   if ( $is_duplicate ) {
     // if this was issued as part of an annual receipt, then jump over to the Annual method
-    $receipt = cdntaxreceipts_load_receipt($receipt_id);
+    $receipt = cdntaxreceiptsfr_load_receipt($receipt_id);
     if ( $receipt['issue_type'] == 'annual' ) {
       $contactId = $receipt['contact_id'];
       $year = substr($receipt['contributions'][0]['receive_date'], 0, 4);
-      return cdntaxreceipts_issueAnnualTaxReceipt($contactId, $year, $collectedPdf, $mode);
+      return cdntaxreceiptsfr_issueAnnualTaxReceipt($contactId, $year, $collectedPdf, $mode);
     }
     else if ( $receipt['issue_type'] == 'aggregate' ) {
       $contactId = $receipt['contact_id'];
       $year = substr($receipt['contributions'][0]['receive_date'], 0, 4);
-      list($method, $email) = cdntaxreceipts_sendMethodForContact($contactId);
-      return cdntaxreceipts_issueAggregateTaxReceipt($contactId, $year, $receipt['contributions'],
+      [$method, $email] = cdntaxreceiptsfr_sendMethodForContact($contactId);
+      return cdntaxreceiptsfr_issueAggregateTaxReceipt($contactId, $year, $receipt['contributions'],
         $method, $collectedPdf, $mode);
     }
     // be sure I'm not changing the receipt number
@@ -746,7 +747,7 @@ function cdntaxreceipts_issueTaxReceipt($contribution, &$collectedPdf = NULL, $m
   }
 
   // determine the send method
-  list($method, $email) = cdntaxreceipts_sendMethodForContact($contribution->contact_id, $printOverride);
+  [$method, $email] = cdntaxreceiptsfr_sendMethodForContact($contribution->contact_id, $printOverride);
 
   // Cancelled receipts are not sent via email
   if ($is_duplicate && $receipt['receipt_status'] == 'cancelled' && $method != 'data') {
@@ -754,13 +755,13 @@ function cdntaxreceipts_issueTaxReceipt($contribution, &$collectedPdf = NULL, $m
   }
 
   // "Attach" receipts are email (we save the file & attach to an email)
-  if ($mode == CDNTAXRECEIPTS_MODE_WORKFLOW) {
+  if ($mode == CDNTAXRECEIPTS_FR_MODE_WORKFLOW) {
     $method = 'email';
   }
 
   // process In-Kind variables if this is a receipt for an in-kind contribution
 
-  $contributiontype =  _cdntaxreceipts_get_type_for_contribution($contribution);
+  $contributiontype =  _cdntaxreceiptsfr_get_type_for_contribution($contribution);
 
   $inkind_values = array();
   // check if this is an 'In-kind" contribution.
@@ -801,13 +802,13 @@ function cdntaxreceipts_issueTaxReceipt($contribution, &$collectedPdf = NULL, $m
   }
 
   // Get description advantage field
-  cdntaxreceipts_advantage($contribution->id, NULL, $advantage, TRUE);
+  cdntaxreceiptsfr_advantage($contribution->id, NULL, $advantage, TRUE);
 
   $receipt = array(
     'receipt_no' => $receipt_no,
-    'issued_on' => CRM_Cdntaxreceipts_Utils_Time::time(),
+    'issued_on' => CRM_Cdntaxreceiptsfr_Utils_Time::time(),
     'contact_id' => $contribution->contact_id,
-    'receipt_amount' => cdntaxreceipts_eligibleAmount($contribution->id),
+    'receipt_amount' => cdntaxreceiptsfr_eligibleAmount($contribution->id),
     'contribution_amount' => $contribution->total_amount,
     'is_duplicate' => $is_duplicate,
     'issue_type' => 'single',
@@ -818,7 +819,7 @@ function cdntaxreceipts_issueTaxReceipt($contribution, &$collectedPdf = NULL, $m
     'email_tracking_id' => md5(uniqid(rand(), TRUE)),
     'advantage_description' => CRM_Utils_Array::value('advantage_description', $advantage, NULL),
     'advantage_amount' => $contribution->non_deductible_amount,
-    'source' => _cdntaxreceipts_get_contribution_source($contribution),
+    'source' => _cdntaxreceiptsfr_get_contribution_source($contribution),
   );
 
   $receipt['contributions'] = array(
@@ -832,10 +833,10 @@ function cdntaxreceipts_issueTaxReceipt($contribution, &$collectedPdf = NULL, $m
     )
   );
   
-  return cdntaxreceipts_processTaxReceipt($receipt, $collectedPdf, $mode);
+  return cdntaxreceiptsfr_processTaxReceipt($receipt, $collectedPdf, $mode);
 }
 
-function cdntaxreceipts_eligibleForReceipt( $contributionId ) {
+function cdntaxreceiptsfr_eligibleForReceipt( $contributionId ) {
   // This function may be called multiple times throughout a request lifecycle, for the
   // same contribution. This can be resource intensive, since it must load the Contribution
   // object each time and will invoke any custom hooks, which may themselves hit the DB. This
@@ -856,7 +857,7 @@ function cdntaxreceipts_eligibleForReceipt( $contributionId ) {
   }
 
   // 1. check that contribution amount is deductible
-  $deductibleAmount = cdntaxreceipts_eligibleAmount($contributionId);;
+  $deductibleAmount = cdntaxreceiptsfr_eligibleAmount($contributionId);;
   // 2. we used to check here the financial type -- to see if it is deductible.
   // Since the introduction of split transactions (4.5 is the cleanest starting point, though they existed prior),
   // we no longer check the financial type of the contribution, and check instead the tax eligibility of each
@@ -899,7 +900,7 @@ function cdntaxreceipts_eligibleForReceipt( $contributionId ) {
 
 }
 
-function cdntaxreceipts_eligibleAmount( $contributionId ) {
+function cdntaxreceiptsfr_eligibleAmount( $contributionId ) {
 
   // This function may be called multiple times throughout a request lifecycle, for the
   // same contribution. This can be resource intensive, since it must load the Contribution
@@ -933,7 +934,7 @@ function cdntaxreceipts_eligibleAmount( $contributionId ) {
 
   if ($count > 0 && $contribution->total_amount > 0) {
     while ( $line_item->fetch() ) {
-      $financialType =  _cdntaxreceipts_get_type_for_line_item($line_item);
+      $financialType =  _cdntaxreceiptsfr_get_type_for_line_item($line_item);
       if ( $financialType->is_deductible ) {
         $deductibleAmount += $line_item->line_total;
       }
@@ -941,7 +942,7 @@ function cdntaxreceipts_eligibleAmount( $contributionId ) {
   }
   else {
     // compute for overall contribution
-    $financialType =  _cdntaxreceipts_get_type_for_contribution($contribution);
+    $financialType =  _cdntaxreceiptsfr_get_type_for_contribution($contribution);
     if ( $financialType->is_deductible ) {
       $deductibleAmount = $contribution->total_amount;
     }
@@ -954,7 +955,7 @@ function cdntaxreceipts_eligibleAmount( $contributionId ) {
   }
 
   // 2. allow modules to alter the amount. lowest amount wins.
-  $results = CRM_Utils_Hook::singleton()->invoke(['contribution'], $contribution, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceipts_eligibleAmount');
+  $results = CRM_Utils_Hook::singleton()->invoke(['contribution'], $contribution, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_eligibleAmount');
 
   if (is_array($results)) {
     foreach ( $results as $result ) {
@@ -973,13 +974,13 @@ function cdntaxreceipts_eligibleAmount( $contributionId ) {
  * Issues an annual tax receipt for a given year.
  * Detects if the receipt is a duplicate and reacts appropriately.
  */
-function cdntaxreceipts_issueAnnualTaxReceipt( $contactId, $year, &$collectedPdf = NULL, $mode = CDNTAXRECEIPTS_MODE_BACKOFFICE ) {
-
-  // determine the send method
-  list( $method, $email ) = cdntaxreceipts_sendMethodForContact($contactId);
+function cdntaxreceiptsfr_issueAnnualTaxReceipt( $contactId, $year, &$collectedPdf = NULL, $mode = CDNTAXRECEIPTS_FR_MODE_BACKOFFICE
+) {
+    // determine the send method
+  [ $method, $email ] = cdntaxreceiptsfr_sendMethodForContact($contactId);
 
   // query for duplicate receipt
-  list( $issued_on, $receipt_id ) = cdntaxreceipts_annual_issued_on($contactId, $year);
+  [ $issued_on, $receipt_id ] = cdntaxreceiptsfr_annual_issued_on($contactId, $year);
 
   // When returning issued_on field:
   //   returns false for non existing $contribution ID
@@ -989,19 +990,19 @@ function cdntaxreceipts_issueAnnualTaxReceipt( $contactId, $year, &$collectedPdf
 
   if ( $is_duplicate ) {
     // issue an identical receipt
-    $receipt = cdntaxreceipts_load_receipt($receipt_id);
+    $receipt = cdntaxreceiptsfr_load_receipt($receipt_id);
     // Cancelled receipts are not sent via email
     if ($receipt['receipt_status'] == 'cancelled' && $method != 'data') {
       $method = 'print';
     }
-    $receipt['issued_on'] = CRM_Cdntaxreceipts_Utils_Time::time();
+    $receipt['issued_on'] = CRM_Cdntaxreceiptsfr_Utils_Time::time();
     $receipt['is_duplicate'] = 1;
     $receipt['receive_date'] = $year;
     $receipt['issue_method'] = $method;
   }
   else {
 
-    $contributions = cdntaxreceipts_contributions_not_receipted($contactId, $year);
+    $contributions = cdntaxreceiptsfr_contributions_not_receipted($contactId, $year);
 
     if ( count($contributions) == 0 ) {
       return array(FALSE, $method, NULL);
@@ -1011,7 +1012,7 @@ function cdntaxreceipts_issueAnnualTaxReceipt( $contactId, $year, &$collectedPdf
     $receiptContributions = array();
     $totalReceipt = 0;
     foreach ( $contributions as $c ) {
-      $eligibleAmount = cdntaxreceipts_eligibleAmount($c['contribution_id']);
+      $eligibleAmount = cdntaxreceiptsfr_eligibleAmount($c['contribution_id']);
       $receiptContributions[] = array(
         'contribution_id' => $c['contribution_id'],
         'contribution_amount' => $c['total_amount'],
@@ -1026,7 +1027,7 @@ function cdntaxreceipts_issueAnnualTaxReceipt( $contactId, $year, &$collectedPdf
 
     $receipt = array(
       'receipt_no' => $receiptNo,
-      'issued_on' => CRM_Cdntaxreceipts_Utils_Time::time(),
+      'issued_on' => CRM_Cdntaxreceiptsfr_Utils_Time::time(),
       'contact_id' => $contactId,
       'receipt_amount' => $totalReceipt,
       'is_duplicate' => 0,
@@ -1040,7 +1041,7 @@ function cdntaxreceipts_issueAnnualTaxReceipt( $contactId, $year, &$collectedPdf
 
   }
 
-  return cdntaxreceipts_processTaxReceipt($receipt, $collectedPdf, $mode);
+  return cdntaxreceiptsfr_processTaxReceipt($receipt, $collectedPdf, $mode);
 }
 
 /**
@@ -1056,9 +1057,9 @@ function cdntaxreceipts_issueAnnualTaxReceipt( $contactId, $year, &$collectedPdf
  * @param bool $previewMode
  * @return array
  */
-function cdntaxreceipts_issueAggregateTaxReceipt($contactId, $year, $contributions, $method, &$collectedPdf = NULL,
-                                                 $mode = CDNTAXRECEIPTS_MODE_BACKOFFICE) {
-  if ( count($contributions) == 0 ) {
+function cdntaxreceiptsfr_issueAggregateTaxReceipt($contactId, $year, $contributions, $method, &$collectedPdf = NULL,
+                                                 $mode = CDNTAXRECEIPTS_FR_MODE_BACKOFFICE) {
+  if (count($contributions) == 0) {
     return array(FALSE, $method, NULL);
   }
 
@@ -1086,7 +1087,7 @@ function cdntaxreceipts_issueAggregateTaxReceipt($contactId, $year, $contributio
 
   $contrib_copy = $contributions;
   $check_contribution = array_shift($contrib_copy);
-  list($issued_on, $receipt_id) = cdntaxreceipts_issued_on($check_contribution['contribution_id']);
+  [$issued_on, $receipt_id] = cdntaxreceiptsfr_issued_on($check_contribution['contribution_id']);
 
   if (isset($check_contribution['receipt_id']) && $check_contribution['receipt_id'] != 0) {
     $is_duplicate = TRUE;
@@ -1096,12 +1097,12 @@ function cdntaxreceipts_issueAggregateTaxReceipt($contactId, $year, $contributio
   }
 
   if ( $is_duplicate ) {
-    $receipt = cdntaxreceipts_load_receipt($receipt_id);
+    $receipt = cdntaxreceiptsfr_load_receipt($receipt_id);
     // Cancelled receipts are not sent via email
     if ($receipt['receipt_status'] == 'cancelled' && $method != 'data') {
       $method = 'print';
     }
-    $receipt['issued_on'] = CRM_Cdntaxreceipts_Utils_Time::time();
+    $receipt['issued_on'] = CRM_Cdntaxreceiptsfr_Utils_Time::time();
     $receipt['is_duplicate'] = 1;
     $receipt['issue_method'] = $method;
     $receipt['receive_date'] = $year;
@@ -1111,7 +1112,7 @@ function cdntaxreceipts_issueAggregateTaxReceipt($contactId, $year, $contributio
     $receiptContributions = array();
     $totalReceipt = 0;
     foreach ( $contributions as $c ) {
-      $eligibleAmount =  cdntaxreceipts_eligibleAmount($c['contribution_id']);
+      $eligibleAmount =  cdntaxreceiptsfr_eligibleAmount($c['contribution_id']);
       $receiptContributions[] = array(
         'contribution_id' => $c['contribution_id'],
         'contribution_amount' => $c['total_amount'],
@@ -1126,7 +1127,7 @@ function cdntaxreceipts_issueAggregateTaxReceipt($contactId, $year, $contributio
 
     $receipt = array(
       'receipt_no' => $receiptNo,
-      'issued_on' => CRM_Cdntaxreceipts_Utils_Time::time(),
+      'issued_on' => CRM_Cdntaxreceiptsfr_Utils_Time::time(),
       'contact_id' => $contactId,
       'receipt_amount' => $totalReceipt,
       'is_duplicate' => 0,
@@ -1139,20 +1140,20 @@ function cdntaxreceipts_issueAggregateTaxReceipt($contactId, $year, $contributio
     );
   }
 
-  return cdntaxreceipts_processTaxReceipt($receipt, $collectedPdf, $mode);
+  return cdntaxreceiptsfr_processTaxReceipt($receipt, $collectedPdf, $mode);
 }
 
 
 /* determines the send method for the specified contact
  * returns array, [0] = 'email' or 'print', [1] = email address or NULL
  */
-function cdntaxreceipts_sendMethodForContact( $contactId, $printOverride = NULL ) {
+function cdntaxreceiptsfr_sendMethodForContact( $contactId, $printOverride = NULL ) {
 
-  $delivery_method = Civi::settings()->get('delivery_method') ?? CDNTAX_DELIVERY_PRINT_ONLY;
-  if ($delivery_method == CDNTAX_DELIVERY_DATA_ONLY) {
+  $delivery_method = Civi::settings()->get('delivery_method') ?? CDNTAX_FR_DELIVERY_PRINT_ONLY;
+  if ($delivery_method == CDNTAX_FR_DELIVERY_DATA_ONLY) {
     return array('data', NULL);
   }
-  else if (($delivery_method == CDNTAX_DELIVERY_PRINT_ONLY) || $printOverride) {
+  else if (($delivery_method == CDNTAX_FR_DELIVERY_PRINT_ONLY) || $printOverride) {
     return array('print', NULL);
   }
 
@@ -1161,7 +1162,7 @@ function cdntaxreceipts_sendMethodForContact( $contactId, $printOverride = NULL 
   $method = array('print', NULL);
 
   require_once 'CRM/Contact/BAO/Contact.php';
-  list($displayname, $email, $doNotEmail, $onHold) = CRM_Contact_BAO_Contact::getContactDetails($contactId);
+  [$displayname, $email, $doNotEmail, $onHold] = CRM_Contact_BAO_Contact::getContactDetails($contactId);
 
   if ( isset($email) ) {
     if ( ! $onHold ) {
@@ -1169,11 +1170,11 @@ function cdntaxreceipts_sendMethodForContact( $contactId, $printOverride = NULL 
     }
   }
 
-  // invoke hook_cdntaxreceipts_method:
+  // invoke hook_cdntaxreceiptsfr_method:
   //   module implementations should return an array containing a single item,
   //   either 'email' or 'print'. if we receive one or more 'print', the contact
   //   is disqualified from receiving email receipts.
-  $results = CRM_Utils_Hook::singleton()->invoke(['contactId'], $contactId, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceipts_method');
+  $results = CRM_Utils_Hook::singleton()->invoke(['contactId'], $contactId, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_method');
 
   if (is_array($results)) {
     foreach ( $results as $result ) {
@@ -1187,7 +1188,7 @@ function cdntaxreceipts_sendMethodForContact( $contactId, $printOverride = NULL 
 
 }
 
-function cdntaxreceipts_sendMethodForContribution( $contributionId ) {
+function cdntaxreceiptsfr_sendMethodForContribution( $contributionId ) {
 
   $contribution =  new CRM_Contribute_DAO_Contribution();
   $contribution->id = $contributionId;
@@ -1196,10 +1197,10 @@ function cdntaxreceipts_sendMethodForContribution( $contributionId ) {
     CRM_Core_Error::fatal( "CDNTaxReceipts: Could not retrieve details for this contribution" );
   }
 
-  return cdntaxreceipts_sendMethodForContact( $contribution->contact_id );
+  return cdntaxreceiptsfr_sendMethodForContact( $contribution->contact_id );
 }
 
-function cdntaxreceipts_openCollectedPDF() {
+function cdntaxreceiptsfr_openCollectedPDF() {
 
   static $pdf;
 
@@ -1225,7 +1226,7 @@ function cdntaxreceipts_openCollectedPDF() {
 
 }
 
-function cdntaxreceipts_sendCollectedPDF(&$pdf, $filename) {
+function cdntaxreceiptsfr_sendCollectedPDF(&$pdf, $filename) {
   if ( $pdf->getNumPages() > 0 ) {
     if (defined('CIVICRM_TEST')) {
       // Put it in uploadDir the same as the other places we put a file, then
@@ -1249,22 +1250,22 @@ function cdntaxreceipts_sendCollectedPDF(&$pdf, $filename) {
  * @param $contribution
  * @return CRM_Financial_DAO_FinancialType
  */
-function _cdntaxreceipts_get_type_for_contribution($contribution) {
+function _cdntaxreceiptsfr_get_type_for_contribution($contribution) {
   require_once 'CRM/Financial/DAO/FinancialType.php';
   $contributionType = new CRM_Financial_DAO_FinancialType();
   $contributionType->id = $contribution->financial_type_id;
   if ( ! $contributionType->find( TRUE ) ) {
-    CRM_Core_Error::fatal( "CDNTaxReceipts: Could not find corresponding contribution type." );
+    CRM_Core_Error::fatal( "CDNTaxReceiptsfr: Could not find corresponding contribution type." );
   }
   return $contributionType;
 }
 
-function _cdntaxreceipts_get_type_for_line_item($line_item) {
+function _cdntaxreceiptsfr_get_type_for_line_item($line_item) {
   require_once 'CRM/Financial/DAO/FinancialType.php';
   $financialType = new CRM_Financial_DAO_FinancialType();
   $financialType->id = $line_item->financial_type_id;
   if ( ! $financialType->find( TRUE ) ) {
-    CRM_Core_Error::fatal( "CDNTaxReceipts: Could not find corresponding financial type." );
+    CRM_Core_Error::fatal( "CDNTaxReceiptsfr: Could not find corresponding financial type." );
   }
   return $financialType;
 }
@@ -1274,7 +1275,7 @@ function _cdntaxreceipts_get_type_for_line_item($line_item) {
  * @param $contact_id
  * @return array|mixed|null address : Contact address fixed with named country and state_province
  */
-function cdntaxreceipts_getAddress($contact_id) {
+function cdntaxreceiptsfr_getAddress($contact_id) {
 
   $address = NULL;
   // get Address information via contact
@@ -1331,7 +1332,7 @@ function cdntaxreceipts_getAddress($contact_id) {
  * @param string $key the setting to retrieve.
  * @return string the value of the $key setting.
  */
-function cdntaxreceipts_getCiviSetting($key) {
+function cdntaxreceiptsfr_getCiviSetting($key) {
   $result = civicrm_api3('Setting', 'get', array(
     'sequential' => 1,
     'return' => array($key),
@@ -1340,7 +1341,7 @@ function cdntaxreceipts_getCiviSetting($key) {
   return isset($settings[$key]) ? $settings[$key] : NULL;
 }
 
-function cdntaxreceipt_getModelMessage() {
+function cdntaxreceiptfr_getModelMessage() {
     $modelMessages = ['-- Choisir le modèle de message pour le PDF --'];
     
     $messageTemplates = \Civi\Api4\MessageTemplate::get(FALSE)
@@ -1359,7 +1360,7 @@ function cdntaxreceipt_getModelMessage() {
  * @param string $key the setting to set.
  * @paramm string $value the value for the setting.
  */
-function cdntaxreceipts_setCiviSetting($key, $value) {
+function cdntaxreceiptsfr_setCiviSetting($key, $value) {
   civicrm_api3('Setting', 'create', array(
     'sequential' => 1,
     $key => $value,
@@ -1370,7 +1371,7 @@ function cdntaxreceipts_setCiviSetting($key, $value) {
  * @param $issue_type
  * @return string display formatted Issue type
  */
-function _cdntaxreceipts_get_display_type($issue_type) {
+function _cdntaxreceiptsfr_get_display_type($issue_type) {
   switch ($issue_type) {
     case 'aggregate' :
       return 'Aggregate';
@@ -1389,7 +1390,7 @@ function _cdntaxreceipts_get_display_type($issue_type) {
  *
  * @language string $language preferred_language (i.e. en_US or fr_CA)
  */
-function _cdntaxreceipts_setReceiptanguage($language) {
+function _cdntaxreceiptsfr_setReceiptanguage($language) {
 
   $cdnLanguages = array('en', 'fr');
   $short = CRM_Core_I18n_PseudoConstant::shortForLong($language);
@@ -1425,7 +1426,7 @@ function _cdntaxreceipts_setReceiptanguage($language) {
  *
  * @return string file path or NULL
  */
-function _cdntaxreceipts_get_image_filepath($imageSettingName) {
+function _cdntaxreceiptsfr_get_image_filepath($imageSettingName) {
   $fileName = Civi::settings()->get($imageSettingName);
   if ($fileName) {
     $fileNameWithPath = CRM_Core_Config::singleton()->customFileUploadDir . $fileName;
@@ -1448,7 +1449,7 @@ function _cdntaxreceipts_get_image_filepath($imageSettingName) {
  * @param string $field_label
  * @return bool
  */
-function _cdntaxreceipts_custom_field_exists($custom_group_id, $field_label) {
+function _cdntaxreceiptsfr_custom_field_exists($custom_group_id, $field_label) {
   $params = array(
     'custom_group_id' => $custom_group_id,
     'name' => CRM_Utils_String::munge($field_label, '_', 64),
@@ -1464,12 +1465,12 @@ function _cdntaxreceipts_custom_field_exists($custom_group_id, $field_label) {
  * Get the issuing city, but bounce if not set.
  * @return string
  */
-function _cdntaxreceipts_get_location(): string {
+function _cdntaxreceiptsfr_get_location(): string {
   $city = \Civi::settings()->get('receipt_location_issued');
   if (empty($city)) {
     CRM_Core_Error::statusBounce(
       ts('Location Issued is not set. Please set it under Administer - CiviContribute - CDN Tax Receipts.', array('domain' => 'org.civicrm.cdntaxreceipts')),
-      CRM_Utils_System::url('civicrm/cdntaxreceipts/settings', 'reset=1')
+      CRM_Utils_System::url('civicrm/cdntaxreceiptsfr/settings', 'reset=1')
     );
   }
   return $city;
@@ -1480,9 +1481,9 @@ function _cdntaxreceipts_get_location(): string {
  * value, or some similar issue. So on relevant pages we should call this to
  * run some checks and statusBounce if not good to go.
  */
-function _cdntaxreceipts_check_requirements(): void {
+function _cdntaxreceiptsfr_check_requirements(): void {
   // At the moment this is all we do...
-  _cdntaxreceipts_get_location();
+  _cdntaxreceiptsfr_get_location();
 }
 
 /**
@@ -1492,7 +1493,7 @@ function _cdntaxreceipts_check_requirements(): void {
  * @param CRM_Core_DAO_Contribution $contribution
  * @return string
  */
-function _cdntaxreceipts_get_contribution_source($contribution): string {
+function _cdntaxreceiptsfr_get_contribution_source($contribution): string {
   $setting = \Civi::settings()->get('cdntaxreceipts_source_field') ?? '';
   if ($setting === '') {
     return '';

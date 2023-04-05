@@ -21,9 +21,9 @@ class AggregateTest extends CdntaxreceiptsBase {
   public function testAggregateTaxReceipt() {
     // set up mock time
     $mock_time = '2021-01-02 10:11:12';
-    \CRM_Cdntaxreceipts_Utils_Time::setTime($mock_time);
+    \CRM_Cdntaxreceiptsfr_Utils_Time::setTime($mock_time);
 
-    $this->setDeliveryMethod(CDNTAX_DELIVERY_PRINT_ONLY);
+    $this->setDeliveryMethod(CDNTAX_FR_DELIVERY_PRINT_ONLY);
 
     $contribution1_1 = civicrm_api3('Contribution', 'create', [
       'contact_id' => $this->contact['id'],
@@ -98,7 +98,7 @@ class AggregateTest extends CdntaxreceiptsBase {
 
     $this->assertExpectedPDF(__CLASS__, __FUNCTION__);
 
-    \CRM_Cdntaxreceipts_Utils_Time::reset();
+    \CRM_Cdntaxreceiptsfr_Utils_Time::reset();
 
     $this->htmlOutput();
   }

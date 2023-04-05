@@ -8,7 +8,7 @@
  * but then you have the reverse problem where you can't ever turn it off in
  * a given test.
  */
-class CRM_Cdntaxreceipts_Utils_Time {
+class CRM_Cdntaxreceiptsfr_Utils_Time {
 
   /**
    * Return either the mock time our test has set, or the real time.

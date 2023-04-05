@@ -1,5 +1,5 @@
 <?php
-use CRM_Cdntaxreceipts_ExtensionUtil as E;
+use CRM_Cdntaxreceiptsfr_ExtensionUtil as E;
 
 /**
  * CdnAdvantage.create API specification (optional)

@@ -5,7 +5,7 @@ require_once('CRM/Contribute/PseudoConstant.php');
 require_once('CRM/Utils/Type.php');
 require_once('CRM/Utils/Array.php');
 
-class CRM_Cdntaxreceipts_Form_Report_ReceiptsNotIssued extends CRM_Report_Form {
+class CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued extends CRM_Report_Form {
 
   protected $_useEligibilityHooks = FALSE;
   CONST SETTINGS = 'CDNTaxReceipts';
@@ -234,8 +234,8 @@ CREATE TEMPORARY TABLE cdntaxreceipts_temp_civireport_eligible (
     $dao = CRM_Core_DAO::executeQuery($sql);
 
     while ( $dao->fetch() ) {
-      if ( cdntaxreceipts_eligibleForReceipt($dao->id) ) {
-        $amount = cdntaxreceipts_eligibleAmount($dao->id);
+      if ( cdntaxreceiptsfr_eligibleForReceipt($dao->id) ) {
+        $amount = cdntaxreceiptsfr_eligibleAmount($dao->id);
         $sql = "INSERT INTO cdntaxreceipts_temp_civireport_eligible (contribution_id,eligible_amount)
                 VALUES ($dao->id, $amount)";
         CRM_Core_DAO::executeQuery($sql);

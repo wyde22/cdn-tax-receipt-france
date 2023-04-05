@@ -1,15 +1,15 @@
 <?php
 
 // AUTO-GENERATED FILE -- Civix may overwrite any changes made to this file
-use CRM_Cdntaxreceipts_ExtensionUtil as E;
+use CRM_Cdntaxreceiptsfr_ExtensionUtil as E;
 
 /**
  * Base class which provides helpers to execute upgrade logic
  */
-class CRM_Cdntaxreceipts_Upgrader_Base {
+class CRM_Cdntaxreceiptsfr_Upgrader_Base {
 
   /**
-   * @var CRM_Cdntaxreceipts_Upgrader_Base
+   * @var CRM_Cdntaxreceiptsfr_Upgrader_Base
    */
   public static $instance;
 
@@ -47,7 +47,7 @@ class CRM_Cdntaxreceipts_Upgrader_Base {
    */
   public static function instance() {
     if (!self::$instance) {
-      self::$instance = new CRM_Cdntaxreceipts_Upgrader(
+      self::$instance = new CRM_Cdntaxreceiptsfr_Upgrader(
         'org.civicrm.cdntaxreceipts',
         E::path()
       );

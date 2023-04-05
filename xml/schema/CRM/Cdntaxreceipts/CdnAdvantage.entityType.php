@@ -5,7 +5,7 @@ return array (
   0 => 
   array (
     'name' => 'CdnAdvantage',
-    'class' => 'CRM_Cdntaxreceipts_DAO_CdnAdvantage',
+    'class' => 'CRM_Cdntaxreceiptsfr_DAO_CdnAdvantage',
     'table' => 'cdntaxreceipts_advantage',
   ),
 );

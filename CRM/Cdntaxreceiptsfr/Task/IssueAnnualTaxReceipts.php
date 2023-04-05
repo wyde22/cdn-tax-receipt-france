@@ -4,7 +4,7 @@
  * This class provides the common functionality for issuing Annual Tax Receipts for
  * one or a group of contact ids.
  */
-class CRM_Cdntaxreceipts_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_Task {
+class CRM_Cdntaxreceiptsfr_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_Task {
 
   const MAX_RECEIPT_COUNT = 1000;
 
@@ -37,11 +37,11 @@ class CRM_Cdntaxreceipts_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_Ta
     // count and categorize contributions
     foreach ( $this->_contactIds as $id ) {
       foreach ( $this->_years as $year ) {
-        list( $issuedOn, $receiptId ) = cdntaxreceipts_annual_issued_on($id, $year);
+        [ $issuedOn, $receiptId ] = cdntaxreceiptsfr_annual_issued_on($id, $year);
 
-        $eligible = count(cdntaxreceipts_contributions_not_receipted($id, $year));
+        $eligible = count(cdntaxreceiptsfr_contributions_not_receipted($id, $year));
         if ( $eligible > 0 ) {
-          list( $method, $email ) = cdntaxreceipts_sendMethodForContact($id);
+          [ $method, $email ] = cdntaxreceiptsfr_sendMethodForContact($id);
           $receipts[$year][$method]++;
           $receipts[$year]['total']++;
           $receipts[$year]['contrib'] += $eligible;
@@ -77,7 +77,7 @@ class CRM_Cdntaxreceipts_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_Ta
     $this->assign('receiptTotal', $receiptTotal);
     $this->assign('receiptYears', $this->_years);
 
-    $delivery_method = Civi::settings()->get('delivery_method') ?? CDNTAX_DELIVERY_PRINT_ONLY;
+    $delivery_method = Civi::settings()->get('delivery_method') ?? CDNTAX_FR_DELIVERY_PRINT_ONLY;
     $this->assign('deliveryMethod', $delivery_method);
 
     // add radio buttons
@@ -86,7 +86,7 @@ class CRM_Cdntaxreceipts_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_Ta
     }
     $this->addRule('receipt_year', ts('Selection required', array('domain' => 'org.civicrm.cdntaxreceipts')), 'required');
 
-    if ($delivery_method != CDNTAX_DELIVERY_DATA_ONLY) {
+    if ($delivery_method != CDNTAX_FR_DELIVERY_DATA_ONLY) {
       $this->add('checkbox', 'is_preview', ts('Run in preview mode?', array('domain' => 'org.civicrm.cdntaxreceipts')));
     }
 
@@ -143,7 +143,7 @@ class CRM_Cdntaxreceipts_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_Ta
     //module_load_include('.module','civicrm_cdntaxreceipts','civicrm_cdntaxreceipts');
 
     // start a PDF to collect receipts that cannot be emailed
-    $receiptsForPrinting = cdntaxreceipts_openCollectedPDF();
+    $receiptsForPrinting = cdntaxreceiptsfr_openCollectedPDF();
 
     $emailCount = 0;
     $printCount = 0;
@@ -152,8 +152,8 @@ class CRM_Cdntaxreceipts_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_Ta
 
     foreach ($this->_contactIds as $contactId ) {
 
-      list( $issuedOn, $receiptId ) = cdntaxreceipts_annual_issued_on($contactId, $year);
-      $contributions = cdntaxreceipts_contributions_not_receipted($contactId, $year);
+      [ $issuedOn, $receiptId ] = cdntaxreceiptsfr_annual_issued_on($contactId, $year);
+      $contributions = cdntaxreceiptsfr_contributions_not_receipted($contactId, $year);
 
       if ( $emailCount + $printCount + $failCount >= self::MAX_RECEIPT_COUNT ) {
         $status = ts('Maximum of %1 tax receipt(s) were sent. Please repeat to continue processing.', array(1=>self::MAX_RECEIPT_COUNT, 'domain' => 'org.civicrm.cdntaxreceipts'));
@@ -163,7 +163,7 @@ class CRM_Cdntaxreceipts_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_Ta
 
       if ( empty($issuedOn) && count($contributions) > 0 ) {
 
-        list( $ret, $method ) = cdntaxreceipts_issueAnnualTaxReceipt($contactId, $year, $receiptsForPrinting, $previewMode);
+        [ $ret, $method ] = cdntaxreceiptsfr_issueAnnualTaxReceipt($contactId, $year, $receiptsForPrinting, $previewMode);
 
         if ( $ret == 0 ) {
           $failCount++;
@@ -207,7 +207,7 @@ class CRM_Cdntaxreceipts_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_Ta
 
     // 4. send the collected PDF for download
     // NB: This exits if a file is sent.
-    cdntaxreceipts_sendCollectedPDF($receiptsForPrinting, 'Receipts-To-Print-' . (int) $_SERVER['REQUEST_TIME'] . '.pdf');  // EXITS.
+    cdntaxreceiptsfr_sendCollectedPDF($receiptsForPrinting, 'Receipts-To-Print-' . (int) $_SERVER['REQUEST_TIME'] . '.pdf');  // EXITS.
   }
 }
 

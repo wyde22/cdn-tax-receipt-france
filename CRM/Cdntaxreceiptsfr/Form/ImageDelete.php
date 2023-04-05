@@ -1,11 +1,11 @@
 <?php
 
-use CRM_Cdntaxreceipts_ExtensionUtil as E;
+use CRM_Cdntaxreceiptsfr_ExtensionUtil as E;
 
 /**
  * Callback for deleting template images
  */
-class CRM_Cdntaxreceipts_Form_ImageDelete extends CRM_Core_Form {
+class CRM_Cdntaxreceiptsfr_Form_ImageDelete extends CRM_Core_Form {
 
   public function buildQuickForm() {
     parent::buildQuickForm();

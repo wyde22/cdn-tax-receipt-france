@@ -4,7 +4,7 @@
  * This class provides the common functionality for issuing Aggregate Tax Receipts for
  * a group of Contribution ids.
  */
-class CRM_Cdntaxreceipts_Task_IssueAggregateTaxReceipts extends CRM_Contribute_Form_Task {
+class CRM_Cdntaxreceiptsfr_Task_IssueAggregateTaxReceipts extends CRM_Contribute_Form_Task {
 
   const MAX_RECEIPT_COUNT = 1000;
 
@@ -43,7 +43,7 @@ class CRM_Cdntaxreceipts_Task_IssueAggregateTaxReceipts extends CRM_Contribute_F
       ),
     );
 
-    $this->_contributions_status = cdntaxreceipts_contributions_get_status($this->_contributionIds);
+    $this->_contributions_status = cdntaxreceiptsfr_contributions_get_status($this->_contributionIds);
 
     // Get the number of years selected
     foreach ($this->_contributions_status as $contrib_status) {
@@ -78,7 +78,7 @@ class CRM_Cdntaxreceipts_Task_IssueAggregateTaxReceipts extends CRM_Contribute_F
         $receipts[$issue_type][$year]['total_amount'] += ($status['total_amount']);
         $receipts[$issue_type][$year]['not_eligible_amount'] += $status['non_deductible_amount'];
         if ($status['eligible']) {
-          list( $method, $email ) = cdntaxreceipts_sendMethodForContact($status['contact_id']);
+          list( $method, $email ) = cdntaxreceiptsfr_sendMethodForContact($status['contact_id']);
           $receipts[$issue_type][$year][$method]['contribution_count']++;
           if (!isset($receipts[$issue_type][$year]['contact_ids'][$status['contact_id']])) {
             $receipts[$issue_type][$year]['contact_ids'][$status['contact_id']] = array(
@@ -132,7 +132,7 @@ class CRM_Cdntaxreceipts_Task_IssueAggregateTaxReceipts extends CRM_Contribute_F
     $this->assign('receiptList', $this->_receipts);
     $this->assign('receiptYears', $this->_years);
 
-    $delivery_method = Civi::settings()->get('delivery_method') ?? CDNTAX_DELIVERY_PRINT_ONLY;
+    $delivery_method = Civi::settings()->get('delivery_method') ?? CDNTAX_FR_DELIVERY_PRINT_ONLY;
     $this->assign('deliveryMethod', $delivery_method);
 
     // add radio buttons
@@ -142,7 +142,7 @@ class CRM_Cdntaxreceipts_Task_IssueAggregateTaxReceipts extends CRM_Contribute_F
     }
     $this->addRule('receipt_year', ts('Selection required', array('domain' => 'org.civicrm.cdntaxreceipts')), 'required');
 
-    if ($delivery_method != CDNTAX_DELIVERY_DATA_ONLY) {
+    if ($delivery_method != CDNTAX_FR_DELIVERY_DATA_ONLY) {
       $this->add('checkbox', 'is_preview', ts('Run in preview mode?', array('domain' => 'org.civicrm.cdntaxreceipts')));
     }
 
@@ -194,7 +194,7 @@ class CRM_Cdntaxreceipts_Task_IssueAggregateTaxReceipts extends CRM_Contribute_F
     }
 
     // start a PDF to collect receipts that cannot be emailed
-    $receiptsForPrintingPDF = cdntaxreceipts_openCollectedPDF();
+    $receiptsForPrintingPDF = cdntaxreceiptsfr_openCollectedPDF();
 
     $emailCount = 0;
     $printCount = 0;
@@ -215,7 +215,7 @@ class CRM_Cdntaxreceipts_Task_IssueAggregateTaxReceipts extends CRM_Contribute_F
       $method = $contribution_status['issue_method'];
 
       if ( empty($issuedOn) && count($contributions) > 0 ) {
-        $ret = cdntaxreceipts_issueAggregateTaxReceipt($contact_id, $year, $contributions, $method,
+        $ret = cdntaxreceiptsfr_issueAggregateTaxReceipt($contact_id, $year, $contributions, $method,
           $receiptsForPrintingPDF, $previewMode);
 
         if ( $ret == 0 ) {
@@ -260,7 +260,7 @@ class CRM_Cdntaxreceipts_Task_IssueAggregateTaxReceipts extends CRM_Contribute_F
 
     // 4. send the collected PDF for download
     // NB: This exits if a file is sent.
-    cdntaxreceipts_sendCollectedPDF($receiptsForPrintingPDF, 'Receipts-To-Print-' . CRM_Cdntaxreceipts_Utils_Time::time() . '.pdf');  // EXITS.
+    cdntaxreceiptsfr_sendCollectedPDF($receiptsForPrintingPDF, 'Receipts-To-Print-' . CRM_Cdntaxreceiptsfr_Utils_Time::time() . '.pdf');  // EXITS.
   }
 }
 

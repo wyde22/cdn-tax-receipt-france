@@ -10,7 +10,7 @@ class CRM_Cdntaxreceipts_ReceiptsIssuedReportTest extends CRM_Cdntaxreceipts_Bas
     if (!\CRM_Core_BAO_Domain::isDBVersionAtLeast('5.43.alpha1')) {
       $this->markTestIncomplete('Test requires E_NOTICE fix that is only in 5.43+');
     }
-    $this->setDeliveryMethod(CDNTAX_DELIVERY_PRINT_ONLY);
+    $this->setDeliveryMethod(CDNTAX_FR_DELIVERY_PRINT_ONLY);
   }
 
   public function tearDown(): void {
@@ -40,7 +40,7 @@ class CRM_Cdntaxreceipts_ReceiptsIssuedReportTest extends CRM_Cdntaxreceipts_Bas
     $contribution->id = $contribution_id;
     $contribution->find(TRUE);
     // issue receipt
-    list($result, $method) = cdntaxreceipts_issueTaxReceipt($contribution);
+    [$result, $method] = cdntaxreceiptsfr_issueTaxReceipt($contribution);
     $this->assertTrue($result);
     $this->assertEquals('print', $method);
 
@@ -93,7 +93,7 @@ class CRM_Cdntaxreceipts_ReceiptsIssuedReportTest extends CRM_Cdntaxreceipts_Bas
     $contribution->id = $contribution_id;
     $contribution->find(TRUE);
     // issue receipt
-    list($result, $method) = cdntaxreceipts_issueTaxReceipt($contribution);
+    [$result, $method] = cdntaxreceiptsfr_issueTaxReceipt($contribution);
 
     // run report
     $data = civicrm_api3('report_template', 'getrows', [

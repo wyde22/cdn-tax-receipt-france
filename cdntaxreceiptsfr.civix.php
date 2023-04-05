@@ -6,7 +6,7 @@
  * The ExtensionUtil class provides small stubs for accessing resources of this
  * extension.
  */
-class CRM_Cdntaxreceipts_ExtensionUtil {
+class CRM_Cdntaxreceiptsfr_ExtensionUtil {
   const SHORT_NAME = 'cdntaxreceipts';
   const LONG_NAME = 'org.civicrm.cdntaxreceipts';
   const CLASS_PREFIX = 'CRM_Cdntaxreceipts';
@@ -76,14 +76,14 @@ class CRM_Cdntaxreceipts_ExtensionUtil {
   }
 }
 
-use CRM_Cdntaxreceipts_ExtensionUtil as E;
+use CRM_Cdntaxreceiptsfr_ExtensionUtil as E;
 
 /**
  * (Delegated) Implements hook_civicrm_config().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config
  */
-function _cdntaxreceipts_civix_civicrm_config(&$config = NULL) {
+function _cdntaxreceiptsfr_civix_civicrm_config(&$config = NULL) {
   static $configured = FALSE;
   if ($configured) {
     return;
@@ -113,8 +113,8 @@ function _cdntaxreceipts_civix_civicrm_config(&$config = NULL) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_xmlMenu
  */
-function _cdntaxreceipts_civix_civicrm_xmlMenu(&$files) {
-  foreach (_cdntaxreceipts_civix_glob(__DIR__ . '/xml/Menu/*.xml') as $file) {
+function _cdntaxreceiptsfr_civix_civicrm_xmlMenu(&$files) {
+  foreach (_cdntaxreceiptsfr_civix_glob(__DIR__ . '/xml/Menu/*.xml') as $file) {
     $files[] = $file;
   }
 }
@@ -124,9 +124,9 @@ function _cdntaxreceipts_civix_civicrm_xmlMenu(&$files) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
  */
-function _cdntaxreceipts_civix_civicrm_install() {
-  _cdntaxreceipts_civix_civicrm_config();
-  if ($upgrader = _cdntaxreceipts_civix_upgrader()) {
+function _cdntaxreceiptsfr_civix_civicrm_install() {
+  _cdntaxreceiptsfr_civix_civicrm_config();
+  if ($upgrader = _cdntaxreceiptsfr_civix_upgrader()) {
     $upgrader->onInstall();
   }
 }
@@ -136,9 +136,9 @@ function _cdntaxreceipts_civix_civicrm_install() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postInstall
  */
-function _cdntaxreceipts_civix_civicrm_postInstall() {
-  _cdntaxreceipts_civix_civicrm_config();
-  if ($upgrader = _cdntaxreceipts_civix_upgrader()) {
+function _cdntaxreceiptsfr_civix_civicrm_postInstall() {
+  _cdntaxreceiptsfr_civix_civicrm_config();
+  if ($upgrader = _cdntaxreceiptsfr_civix_upgrader()) {
     if (is_callable([$upgrader, 'onPostInstall'])) {
       $upgrader->onPostInstall();
     }
@@ -150,9 +150,9 @@ function _cdntaxreceipts_civix_civicrm_postInstall() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_uninstall
  */
-function _cdntaxreceipts_civix_civicrm_uninstall() {
-  _cdntaxreceipts_civix_civicrm_config();
-  if ($upgrader = _cdntaxreceipts_civix_upgrader()) {
+function _cdntaxreceiptsfr_civix_civicrm_uninstall() {
+  _cdntaxreceiptsfr_civix_civicrm_config();
+  if ($upgrader = _cdntaxreceiptsfr_civix_upgrader()) {
     $upgrader->onUninstall();
   }
 }
@@ -162,9 +162,9 @@ function _cdntaxreceipts_civix_civicrm_uninstall() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
  */
-function _cdntaxreceipts_civix_civicrm_enable() {
-  _cdntaxreceipts_civix_civicrm_config();
-  if ($upgrader = _cdntaxreceipts_civix_upgrader()) {
+function _cdntaxreceiptsfr_civix_civicrm_enable() {
+  _cdntaxreceiptsfr_civix_civicrm_config();
+  if ($upgrader = _cdntaxreceiptsfr_civix_upgrader()) {
     if (is_callable([$upgrader, 'onEnable'])) {
       $upgrader->onEnable();
     }
@@ -177,9 +177,9 @@ function _cdntaxreceipts_civix_civicrm_enable() {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_disable
  * @return mixed
  */
-function _cdntaxreceipts_civix_civicrm_disable() {
-  _cdntaxreceipts_civix_civicrm_config();
-  if ($upgrader = _cdntaxreceipts_civix_upgrader()) {
+function _cdntaxreceiptsfr_civix_civicrm_disable() {
+  _cdntaxreceiptsfr_civix_civicrm_config();
+  if ($upgrader = _cdntaxreceiptsfr_civix_upgrader()) {
     if (is_callable([$upgrader, 'onDisable'])) {
       $upgrader->onDisable();
     }
@@ -198,21 +198,21 @@ function _cdntaxreceipts_civix_civicrm_disable() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_upgrade
  */
-function _cdntaxreceipts_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
-  if ($upgrader = _cdntaxreceipts_civix_upgrader()) {
+function _cdntaxreceiptsfr_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+  if ($upgrader = _cdntaxreceiptsfr_civix_upgrader()) {
     return $upgrader->onUpgrade($op, $queue);
   }
 }
 
 /**
- * @return CRM_Cdntaxreceipts_Upgrader
+ * @return CRM_Cdntaxreceiptsfr_Upgrader
  */
-function _cdntaxreceipts_civix_upgrader() {
+function _cdntaxreceiptsfr_civix_upgrader() {
   if (!file_exists(__DIR__ . '/CRM/Cdntaxreceipts/Upgrader.php')) {
     return NULL;
   }
   else {
-    return CRM_Cdntaxreceipts_Upgrader_Base::instance();
+    return CRM_Cdntaxreceiptsfr_Upgrader_Base::instance();
   }
 }
 
@@ -227,7 +227,7 @@ function _cdntaxreceipts_civix_upgrader() {
  *
  * @return array
  */
-function _cdntaxreceipts_civix_find_files($dir, $pattern) {
+function _cdntaxreceiptsfr_civix_find_files($dir, $pattern) {
   if (is_callable(['CRM_Utils_File', 'findFiles'])) {
     return CRM_Utils_File::findFiles($dir, $pattern);
   }
@@ -236,7 +236,7 @@ function _cdntaxreceipts_civix_find_files($dir, $pattern) {
   $result = [];
   while (!empty($todos)) {
     $subdir = array_shift($todos);
-    foreach (_cdntaxreceipts_civix_glob("$subdir/$pattern") as $match) {
+    foreach (_cdntaxreceiptsfr_civix_glob("$subdir/$pattern") as $match) {
       if (!is_dir($match)) {
         $result[] = $match;
       }
@@ -263,8 +263,8 @@ function _cdntaxreceipts_civix_find_files($dir, $pattern) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_managed
  */
-function _cdntaxreceipts_civix_civicrm_managed(&$entities) {
-  $mgdFiles = _cdntaxreceipts_civix_find_files(__DIR__, '*.mgd.php');
+function _cdntaxreceiptsfr_civix_civicrm_managed(&$entities) {
+  $mgdFiles = _cdntaxreceiptsfr_civix_find_files(__DIR__, '*.mgd.php');
   sort($mgdFiles);
   foreach ($mgdFiles as $file) {
     $es = include $file;
@@ -292,12 +292,12 @@ function _cdntaxreceipts_civix_civicrm_managed(&$entities) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_caseTypes
  */
-function _cdntaxreceipts_civix_civicrm_caseTypes(&$caseTypes) {
+function _cdntaxreceiptsfr_civix_civicrm_caseTypes(&$caseTypes) {
   if (!is_dir(__DIR__ . '/xml/case')) {
     return;
   }
 
-  foreach (_cdntaxreceipts_civix_glob(__DIR__ . '/xml/case/*.xml') as $file) {
+  foreach (_cdntaxreceiptsfr_civix_glob(__DIR__ . '/xml/case/*.xml') as $file) {
     $name = preg_replace('/\.xml$/', '', basename($file));
     if ($name != CRM_Case_XMLProcessor::mungeCaseType($name)) {
       $errorMessage = sprintf("Case-type file name is malformed (%s vs %s)", $name, CRM_Case_XMLProcessor::mungeCaseType($name));
@@ -320,12 +320,12 @@ function _cdntaxreceipts_civix_civicrm_caseTypes(&$caseTypes) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_angularModules
  */
-function _cdntaxreceipts_civix_civicrm_angularModules(&$angularModules) {
+function _cdntaxreceiptsfr_civix_civicrm_angularModules(&$angularModules) {
   if (!is_dir(__DIR__ . '/ang')) {
     return;
   }
 
-  $files = _cdntaxreceipts_civix_glob(__DIR__ . '/ang/*.ang.php');
+  $files = _cdntaxreceiptsfr_civix_glob(__DIR__ . '/ang/*.ang.php');
   foreach ($files as $file) {
     $name = preg_replace(':\.ang\.php$:', '', basename($file));
     $module = include $file;
@@ -341,8 +341,8 @@ function _cdntaxreceipts_civix_civicrm_angularModules(&$angularModules) {
  *
  * Find any and return any files matching "*.theme.php"
  */
-function _cdntaxreceipts_civix_civicrm_themes(&$themes) {
-  $files = _cdntaxreceipts_civix_glob(__DIR__ . '/*.theme.php');
+function _cdntaxreceiptsfr_civix_civicrm_themes(&$themes) {
+  $files = _cdntaxreceiptsfr_civix_glob(__DIR__ . '/*.theme.php');
   foreach ($files as $file) {
     $themeMeta = include $file;
     if (empty($themeMeta['name'])) {
@@ -368,7 +368,7 @@ function _cdntaxreceipts_civix_civicrm_themes(&$themes) {
  *
  * @return array
  */
-function _cdntaxreceipts_civix_glob($pattern) {
+function _cdntaxreceiptsfr_civix_glob($pattern) {
   $result = glob($pattern);
   return is_array($result) ? $result : [];
 }
@@ -384,7 +384,7 @@ function _cdntaxreceipts_civix_glob($pattern) {
  *
  * @return bool
  */
-function _cdntaxreceipts_civix_insert_navigation_menu(&$menu, $path, $item) {
+function _cdntaxreceiptsfr_civix_insert_navigation_menu(&$menu, $path, $item) {
   // If we are done going down the path, insert menu
   if (empty($path)) {
     $menu[] = [
@@ -405,7 +405,7 @@ function _cdntaxreceipts_civix_insert_navigation_menu(&$menu, $path, $item) {
         if (!isset($entry['child'])) {
           $entry['child'] = [];
         }
-        $found = _cdntaxreceipts_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item);
+        $found = _cdntaxreceiptsfr_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item);
       }
     }
     return $found;
@@ -415,9 +415,9 @@ function _cdntaxreceipts_civix_insert_navigation_menu(&$menu, $path, $item) {
 /**
  * (Delegated) Implements hook_civicrm_navigationMenu().
  */
-function _cdntaxreceipts_civix_navigationMenu(&$nodes) {
+function _cdntaxreceiptsfr_civix_navigationMenu(&$nodes) {
   if (!is_callable(['CRM_Core_BAO_Navigation', 'fixNavigationMenu'])) {
-    _cdntaxreceipts_civix_fixNavigationMenu($nodes);
+    _cdntaxreceiptsfr_civix_fixNavigationMenu($nodes);
   }
 }
 
@@ -425,17 +425,17 @@ function _cdntaxreceipts_civix_navigationMenu(&$nodes) {
  * Given a navigation menu, generate navIDs for any items which are
  * missing them.
  */
-function _cdntaxreceipts_civix_fixNavigationMenu(&$nodes) {
+function _cdntaxreceiptsfr_civix_fixNavigationMenu(&$nodes) {
   $maxNavID = 1;
   array_walk_recursive($nodes, function($item, $key) use (&$maxNavID) {
     if ($key === 'navID') {
       $maxNavID = max($maxNavID, $item);
     }
   });
-  _cdntaxreceipts_civix_fixNavigationMenuItems($nodes, $maxNavID, NULL);
+  _cdntaxreceiptsfr_civix_fixNavigationMenuItems($nodes, $maxNavID, NULL);
 }
 
-function _cdntaxreceipts_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) {
+function _cdntaxreceiptsfr_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) {
   $origKeys = array_keys($nodes);
   foreach ($origKeys as $origKey) {
     if (!isset($nodes[$origKey]['attributes']['parentID']) && $parentID !== NULL) {
@@ -450,7 +450,7 @@ function _cdntaxreceipts_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $pare
       $origKey = $newKey;
     }
     if (isset($nodes[$origKey]['child']) && is_array($nodes[$origKey]['child'])) {
-      _cdntaxreceipts_civix_fixNavigationMenuItems($nodes[$origKey]['child'], $maxNavID, $nodes[$origKey]['attributes']['navID']);
+      _cdntaxreceiptsfr_civix_fixNavigationMenuItems($nodes[$origKey]['child'], $maxNavID, $nodes[$origKey]['attributes']['navID']);
     }
   }
 }
@@ -460,7 +460,7 @@ function _cdntaxreceipts_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $pare
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_alterSettingsFolders
  */
-function _cdntaxreceipts_civix_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
+function _cdntaxreceiptsfr_civix_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   $settingsDir = __DIR__ . DIRECTORY_SEPARATOR . 'settings';
   if (!in_array($settingsDir, $metaDataFolders) && is_dir($settingsDir)) {
     $metaDataFolders[] = $settingsDir;
@@ -474,11 +474,11 @@ function _cdntaxreceipts_civix_civicrm_alterSettingsFolders(&$metaDataFolders = 
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
  */
-function _cdntaxreceipts_civix_civicrm_entityTypes(&$entityTypes) {
+function _cdntaxreceiptsfr_civix_civicrm_entityTypes(&$entityTypes) {
   $entityTypes = array_merge($entityTypes, [
     'CRM_Cdntaxreceipts_DAO_CdnAdvantage' => [
       'name' => 'CdnAdvantage',
-      'class' => 'CRM_Cdntaxreceipts_DAO_CdnAdvantage',
+      'class' => 'CRM_Cdntaxreceiptsfr_DAO_CdnAdvantage',
       'table' => 'cdntaxreceipts_advantage',
     ],
   ]);

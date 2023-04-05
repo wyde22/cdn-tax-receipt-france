@@ -46,7 +46,7 @@ class functionsTest extends \CiviUnitTestCase implements HeadlessInterface {
       'is_required' => 1,
       'is_active' => 1,
     ], $create_params));
-    $this->assertSame($expected, _cdntaxreceipts_custom_field_exists($this->custom_group['id'], $label_to_check));
+    $this->assertSame($expected, _cdntaxreceiptsfr_custom_field_exists($this->custom_group['id'], $label_to_check));
   }
 
   /**
