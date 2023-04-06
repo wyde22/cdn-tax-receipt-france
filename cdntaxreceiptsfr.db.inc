@@ -13,8 +13,8 @@
 
 function cdntaxreceiptsfr_issued_on($contribution_id) {
 
-  $sql = "SELECT issued_on, l.id as receipt_id FROM cdntaxreceipts_log l
-    INNER JOIN cdntaxreceipts_log_contributions c ON l.id = c.receipt_id
+  $sql = "SELECT issued_on, l.id as receipt_id FROM cdntaxreceiptsfr_log l
+    INNER JOIN cdntaxreceiptsfr_log_contributions c ON l.id = c.receipt_id
     WHERE is_duplicate = 0 AND contribution_id = $contribution_id";
 
   $dao = CRM_Core_DAO::executeQuery($sql);
@@ -36,8 +36,8 @@ function cdntaxreceiptsfr_issued_on($contribution_id) {
 
 function cdntaxreceiptsfr_annual_issued_on($contactId, $year) {
 
-  $sql = "SELECT issued_on, l.id as receipt_id FROM cdntaxreceipts_log l
-    INNER JOIN cdntaxreceipts_log_contributions c ON l.id = c.receipt_id
+  $sql = "SELECT issued_on, l.id as receipt_id FROM cdntaxreceiptsfr_log l
+    INNER JOIN cdntaxreceiptsfr_log_contributions c ON l.id = c.receipt_id
     WHERE is_duplicate = 0 AND issue_type = 'annual' AND contact_id = $contactId
       AND year(receive_date) = $year";
 
@@ -64,8 +64,8 @@ function cdntaxreceiptsfr_all_issued_on($contribution_id) {
 
   $sql = "
     SELECT l.issued_on, l.id as receipt_id, l.is_duplicate, l.issue_type, l.issue_method
-    FROM cdntaxreceipts_log l
-    INNER JOIN cdntaxreceipts_log_contributions c ON l.id = c.receipt_id
+    FROM cdntaxreceiptsfr_log l
+    INNER JOIN cdntaxreceiptsfr_log_contributions c ON l.id = c.receipt_id
     WHERE contribution_id = {$contribution_id}
     GROUP BY l.issued_on, l.is_duplicate, l.id as receipt_id, l.issue_type, l.issue_method";
 
@@ -93,7 +93,7 @@ function cdntaxreceiptsfr_contributions_not_receipted($contactId, $year) {
     FROM civicrm_contribution contrib
     INNER JOIN civicrm_financial_type contrib_type
             ON contrib.financial_type_id = contrib_type.id
-    LEFT  JOIN cdntaxreceipts_log_contributions cdntax_c
+    LEFT  JOIN cdntaxreceiptsfr_log_contributions cdntax_c
             ON contrib.id = cdntax_c.contribution_id
     WHERE cdntax_c.receipt_id IS NULL AND contrib_type.name <> 'In-kind' AND contrib_type.name <> 'In Kind'
       AND contrib.contact_id = $contactId AND YEAR(contrib.receive_date) = $year
@@ -136,8 +136,8 @@ function cdntaxreceiptsfr_load_receipt($receipt_id) {
         l.is_duplicate, l.uid, l.ip, l.issue_type, l.issue_method, l.receipt_status,
         l.email_tracking_id, l.email_opened,
         c.contribution_id, c.contribution_amount, c.receipt_amount, c.receive_date
-    FROM cdntaxreceipts_log l
-    INNER JOIN cdntaxreceipts_log_contributions c ON l.id = c.receipt_id
+    FROM cdntaxreceiptsfr_log l
+    INNER JOIN cdntaxreceiptsfr_log_contributions c ON l.id = c.receipt_id
     WHERE is_duplicate = 0 AND l.id = {$receipt_id}";
 
   $dao = CRM_Core_DAO::executeQuery($sql);
@@ -207,7 +207,7 @@ function cdntaxreceiptsfr_log(&$receipt) {
     10 => array( $receipt['receipt_status'], 'String' ),
     11 => array( $receipt['email_tracking_id'], 'String' ),
   );
-  $sql = "INSERT INTO cdntaxreceipts_log (receipt_no, issued_on, contact_id, receipt_amount,
+  $sql = "INSERT INTO cdntaxreceiptsfr_log (receipt_no, issued_on, contact_id, receipt_amount,
     is_duplicate, uid, ip, issue_type, issue_method, receipt_status, email_tracking_id)
       VALUES (%1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11)";
   $result = CRM_Core_DAO::executeQuery($sql, $params);
@@ -218,7 +218,7 @@ function cdntaxreceiptsfr_log(&$receipt) {
 
   if ($receipt_id && Civi::settings()->get('receipt_serial')) {
     $receipt_no = Civi::settings()->get('receipt_prefix') . str_pad($receipt_id, 8, 0, STR_PAD_LEFT);
-    CRM_Core_DAO::executeQuery('UPDATE cdntaxreceipts_log SET receipt_no = %1 WHERE id = %2', [
+    CRM_Core_DAO::executeQuery('UPDATE cdntaxreceiptsfr_log SET receipt_no = %1 WHERE id = %2', [
       1 => [$receipt_no, 'String'],
       2 => [$receipt_id, 'Positive'],
     ]);
@@ -234,7 +234,7 @@ function cdntaxreceiptsfr_log(&$receipt) {
       4 => array( $contribution['receipt_amount'], 'Money' ),
       5 => array( $contribution['receive_date'], 'String' ),
     );
-    $sql = "INSERT INTO cdntaxreceipts_log_contributions (receipt_id, contribution_id,
+    $sql = "INSERT INTO cdntaxreceiptsfr_log_contributions (receipt_id, contribution_id,
       contribution_amount, receipt_amount, receive_date)
         VALUES (%1, %2, %3, %4, %5)";
     $result = CRM_Core_DAO::executeQuery($sql, $params);
@@ -261,7 +261,7 @@ function cdntaxreceiptsfr_cancel($receipt_id) {
   $params = array(
     1 => array( $receipt_id, 'Integer' ),
   );
-  $sql = "UPDATE cdntaxreceipts_log SET receipt_status = 'cancelled' WHERE id = %1";
+  $sql = "UPDATE cdntaxreceiptsfr_log SET receipt_status = 'cancelled' WHERE id = %1";
   $result = CRM_Core_DAO::executeQuery($sql, $params);
   if (is_a($result, 'DB_Error')) {
     return FALSE;
@@ -304,7 +304,7 @@ function cdntaxreceiptsfr_contributions_get_status($contributionIds = array()) {
     FROM civicrm_contribution contrib
     INNER JOIN civicrm_financial_type contrib_type
             ON contrib.financial_type_id = contrib_type.id
-    LEFT  JOIN cdntaxreceipts_log_contributions cdntax_c
+    LEFT  JOIN cdntaxreceiptsfr_log_contributions cdntax_c
             ON contrib.id = cdntax_c.contribution_id
     WHERE contrib_type.name <> 'In-kind' AND contrib.id IN($ids) AND contrib_type.name <> 'In Kind'";
 
@@ -340,7 +340,7 @@ function cdntaxreceiptsfr_contributions_get_status($contributionIds = array()) {
 function cdntaxreceiptsfr_process_open($tracking_id) {
 
   $sql = "
-UPDATE cdntaxreceipts_log
+UPDATE cdntaxreceiptsfr_log
 SET email_opened = now()
 WHERE email_tracking_id = %1 AND email_opened IS NULL";
 
@@ -356,7 +356,7 @@ WHERE email_tracking_id = %1 AND email_opened IS NULL";
  * Does not deal with locking issue.
  */
 function cdntaxreceiptsfr_log_next_id() {
-  $sql = "SELECT id FROM cdntaxreceipts_log ORDER BY id DESC LIMIT 1";
+  $sql = "SELECT id FROM cdntaxreceiptsfr_log ORDER BY id DESC LIMIT 1";
   $last_id = CRM_Core_DAO::singleValueQuery($sql);
   return $last_id + 1;
 }

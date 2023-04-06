@@ -208,7 +208,7 @@ function _cdntaxreceiptsfr_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = N
  * @return CRM_Cdntaxreceiptsfr_Upgrader
  */
 function _cdntaxreceiptsfr_civix_upgrader() {
-  if (!file_exists(__DIR__ . '/CRM/Cdntaxreceipts/Upgrader.php')) {
+  if (!file_exists(__DIR__ . '/CRM/Cdntaxreceiptsfr/Upgrader.php')) {
     return NULL;
   }
   else {
@@ -476,7 +476,7 @@ function _cdntaxreceiptsfr_civix_civicrm_alterSettingsFolders(&$metaDataFolders 
  */
 function _cdntaxreceiptsfr_civix_civicrm_entityTypes(&$entityTypes) {
   $entityTypes = array_merge($entityTypes, [
-    'CRM_Cdntaxreceipts_DAO_CdnAdvantage' => [
+    'CRM_Cdntaxreceiptsfr_DAO_CdnAdvantage' => [
       'name' => 'CdnAdvantage',
       'class' => 'CRM_Cdntaxreceiptsfr_DAO_CdnAdvantage',
       'table' => 'cdntaxreceipts_advantage',

@@ -98,7 +98,7 @@ contribution_amount decimal(10,2) DEFAULT NULL COMMENT 'Total contribution amoun
 receipt_amount decimal(10,2) NOT NULL COMMENT 'Receiptable amount, total minus non-receiptable portion.',
 receive_date datetime NOT NULL COMMENT 'Date on which the contribution was received, redundant information!',
 PRIMARY KEY (id),
-FOREIGN KEY (receipt_id) REFERENCES cdntaxreceipts_log(id),
+FOREIGN KEY (receipt_id) REFERENCES cdntaxreceiptsfr_log(id),
 INDEX contribution_id (contribution_id)
 ) ENGINE=InnoDB DEFAULT CHARSET={$character_settings['charset']} COLLATE {$character_settings['collation']} COMMENT='Contributions for each tax receipt fr issuing.'");
 
