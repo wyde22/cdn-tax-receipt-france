@@ -67,7 +67,7 @@ class CRM_Cdntaxreceipts_AggregateTest extends CRM_Cdntaxreceipts_Base {
     }
 
     // check logs
-    $records = \CRM_Core_DAO::executeQuery("SELECT * FROM cdntaxreceipts_log")->fetchAll();
+    $records = \CRM_Core_DAO::executeQuery("SELECT * FROM cdntaxreceiptsfr_log")->fetchAll();
     // There's other fields we either can't reliably know or don't care about,
     // but the expected should match a subset of them.
     foreach ($expected as $eid => $expectedContributionLog) {

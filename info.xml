@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<extension key="org.civicrm.cdntaxreceipts" type="module">
-  <file>cdntaxreceipts</file>
+<extension key="org.civicrm.cdntaxreceiptsfr" type="module">
+  <file>cdntaxreceiptsfr</file>
   <name>CDN Tax Receipts France</name>
   <description>
       Extension CiviCRM permettant de gérer les reçus fiscaux pour les associations françaises

@@ -63,7 +63,7 @@ class AggregateTest extends CdntaxreceiptsBase {
     $this->assertPageHasNoErrorMessages();
 
     // check logs
-    $records = \CRM_Core_DAO::executeQuery("SELECT * FROM cdntaxreceipts_log")->fetchAll();
+    $records = \CRM_Core_DAO::executeQuery("SELECT * FROM cdntaxreceiptsfr_log")->fetchAll();
     $expecteds = array(
       0 => array(
         'id' => '1',

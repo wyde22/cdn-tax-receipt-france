@@ -26,7 +26,7 @@ class CdntaxreceiptsBase extends CiviCrmTestBase {
   public function setUp(): void {
     parent::setUp();
 
-    $this->setUpExtension('org.civicrm.cdntaxreceipts');
+    $this->setUpExtension('org.civicrm.cdntaxreceiptsfr');
 
     $this->configureTaxReceiptSettings();
 
