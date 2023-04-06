@@ -9,6 +9,7 @@ use CRM_Cdntaxreceiptsfr_ExtensionUtil as E;
 define('CDNTAXRECEIPTS_FR_MODE_BACKOFFICE', 1);
 define('CDNTAXRECEIPTS_FR_MODE_PREVIEW', 2);
 define('CDNTAXRECEIPTS_FR_MODE_WORKFLOW', 3);
+define('DOMAINS_CDNTAX_FR','org.civicrm.cdntaxreceiptsfr');
 
 function cdntaxreceiptsfr_civicrm_buildForm( $formName, &$form ) {
   if (is_a( $form, 'CRM_Contribute_Form_ContributionView')) {
@@ -16,7 +17,7 @@ function cdntaxreceiptsfr_civicrm_buildForm( $formName, &$form ) {
     // if the Tax Receipt has NOT yet been issued -> display a white maple leaf icon
     // if the Tax Receipt has already been issued -> display a red maple leaf icon
 
-    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.cdntaxreceipts', 'css/civicrm_cdntaxreceipts.css');
+    CRM_Core_Resources::singleton()->addStyleFile(DOMAINS_CDNTAX_FR, 'css/civicrm_cdntaxreceipts.css');
 
     $contributionId = $form->get('id');
     $buttons = array(
@@ -36,7 +37,7 @@ function cdntaxreceiptsfr_civicrm_buildForm( $formName, &$form ) {
       $form->assign('advantage_description', $defaults['advantage_description']);
     }
     CRM_Core_Region::instance('page-body')->add(array(
-      'template' => 'CRM/Cdntaxreceipts/Form/AddAdvantage.tpl',
+      'template' => 'CRM/Cdntaxreceiptsfr/Form/AddAdvantage.tpl',
     ));
 
     if (isset($contributionId) && cdntaxreceiptsfr_eligibleForReceipt($contributionId) ) {
@@ -66,7 +67,7 @@ function cdntaxreceiptsfr_civicrm_buildForm( $formName, &$form ) {
     }
 
     CRM_Core_Region::instance('page-body')->add(array(
-      'template' => 'CRM/Cdntaxreceipts/Form/AddAdvantage.tpl',
+      'template' => 'CRM/Cdntaxreceiptsfr/Form/AddAdvantage.tpl',
     ));
   }
 }
@@ -169,7 +170,7 @@ function cdntaxreceiptsfr_civicrm_postProcess( $formName, &$form ) {
   ));
 
   $urlParams = array('reset=1', 'id='.$contributionId, 'cid='.$contactId);
-  CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/cdntaxreceipts/view', implode('&',$urlParams)));
+  CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/cdntaxreceiptsfr/view', implode('&',$urlParams)));
 }
 
 /**
@@ -195,7 +196,7 @@ function cdntaxreceiptsfr_civicrm_searchTasks($objectType, &$tasks ) {
     }
     if (!$single_in_list) {
       $tasks[] = array (
-        'title' => ts('Issue Tax Receipts (Separate Receipt for Each Contribution)', array('domain' => 'org.civicrm.cdntaxreceipts')),
+        'title' => ts('Issue Tax Receipts (Separate Receipt for Each Contribution)', array('domain' => DOMAINS_CDNTAX_FR)),
         'class' => 'CRM_Cdntaxreceiptsfr_Task_IssueSingleTaxReceipts',
         'result' => TRUE);
     }
@@ -228,7 +229,7 @@ function cdntaxreceiptsfr_civicrm_searchTasks($objectType, &$tasks ) {
 function cdntaxreceiptsfr_civicrm_permission( &$permissions ) {
   $prefix = ts('CiviCRM CDN Tax Receipts') . ': ';
   $permissions += array(
-    'issue cdn tax receipts' => $prefix . ts('Issue Tax Receipts', array('domain' => 'org.civicrm.cdntaxreceipts')),
+    'issue cdn tax receipts' => $prefix . ts('Issue Tax Receipts', array('domain' => DOMAINS_CDNTAX_FR)),
   );
 }
 
@@ -276,7 +277,7 @@ function cdntaxreceiptsfr_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function cdntaxreceiptsfr_civicrm_enable() {
-  CRM_Core_Session::setStatus(ts('Configure the Tax Receipts extension at Administer >> CiviContribute >> CDN Tax Receipts.', array('domain' => 'org.civicrm.cdntaxreceipts')));
+  CRM_Core_Session::setStatus(ts('Configure the Tax Receipts extension at Administer >> CiviContribute >> CDN Tax Receipts FR.', array('domain' => DOMAINS_CDNTAX_FR)));
   return _cdntaxreceiptsfr_civix_civicrm_enable();
 }
 
@@ -381,7 +382,7 @@ function cdntaxreceiptsfr_civicrm_themes(&$themes) {
 function cdntaxreceiptsfr_civicrm_navigationMenu(&$params) {
 
   // Check that our item doesn't already exist
-  $cdntax_search = array('url' => 'civicrm/cdntaxreceipts/settings?reset=1');
+  $cdntax_search = array('url' => 'civicrm/cdntaxreceiptsfr/settings?reset=1');
   $cdntax_item = array();
   CRM_Core_BAO_Navigation::retrieve($cdntax_search, $cdntax_item);
 
@@ -403,9 +404,9 @@ function cdntaxreceiptsfr_civicrm_navigationMenu(&$params) {
         if ('CiviContribute' == $child_value['attributes']['name']) {
           $params[$parent_key]['child'][$child_key]['child'][$navId] = array (
             'attributes' => array (
-              'label' => ts('CDN Tax Receipts',array('domain' => 'org.civicrm.cdntaxreceipts')),
+              'label' => ts('CDN Tax Receipts',array('domain' => DOMAINS_CDNTAX_FR)),
               'name' => 'CDN Tax Receipts',
-              'url' => 'civicrm/cdntaxreceipts/settings?reset=1',
+              'url' => 'civicrm/cdntaxreceiptsfr/settings?reset=1',
               'permission' => 'access CiviContribute,administer CiviCRM',
               'operator' => 'AND',
               'separator' => 2,

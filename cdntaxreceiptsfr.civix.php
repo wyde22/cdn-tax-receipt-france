@@ -7,9 +7,9 @@
  * extension.
  */
 class CRM_Cdntaxreceiptsfr_ExtensionUtil {
-  const SHORT_NAME = 'cdntaxreceipts';
-  const LONG_NAME = 'org.civicrm.cdntaxreceipts';
-  const CLASS_PREFIX = 'CRM_Cdntaxreceipts';
+  const SHORT_NAME = 'cdntaxreceiptsfr';
+  const LONG_NAME = 'org.civicrm.cdntaxreceiptsfr';
+  const CLASS_PREFIX = 'CRM_Cdntaxreceiptsfr';
 
   /**
    * Translate a string using the extension's domain.

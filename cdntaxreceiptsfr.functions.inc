@@ -1,8 +1,8 @@
 <?php
 
 use CRM_Cdntaxreceiptsfr_ExtensionUtil as E;
-
-require_once('FPDI/src/autoload.php');
+    
+    require_once('FPDI/src/autoload.php');
 
   class PDF extends \setasign\Fpdi\Tcpdf\Fpdi {
     /**
@@ -215,7 +215,7 @@ function cdntaxreceiptsfr_generateFormattedReceipt($receipt, &$collectedPdf = NU
     $display_date = date('M j, Y', mktime(0,0,0,1,1,$receipt['receive_date'])) . ' - ' . date('M j, Y', mktime(0,0,0,12,31,$receipt['receive_date']));
   }
 
-  $line_1 = ts("This is your Official Receipt for income tax purposes.", array('domain' => 'org.civicrm.cdntaxreceipts'));
+  $line_1 = ts("This is your Official Receipt for income tax purposes.", array('domain' => DOMAINS_CDNTAX_FR));
 
   $config = CRM_Core_Config::singleton();
     
@@ -433,9 +433,9 @@ function _cdntaxreceiptsfr_writeReceipt(&$pdf, $pdf_variables) {
     $pdf->Write(10, Civi::settings()->get('org_address_line2'), '', 0, 'R', TRUE, 0, FALSE, FALSE, 0);
     $pdf->SetY($mymargin_top + 12);
 
-    $telTxt = ts('Tel: %1', array(1 => Civi::settings()->get('org_tel'), 'domain' => 'org.civicrm.cdntaxreceipts'));
+    $telTxt = ts('Tel: %1', array(1 => Civi::settings()->get('org_tel'), 'domain' => DOMAINS_CDNTAX_FR));
     if ( Civi::settings()->get('org_fax' ) != '' ) {
-      $telTxt .= '; ' . ts('Fax: %1', array(1 => Civi::settings()->get('org_fax'), 'domain' => 'org.civicrm.cdntaxreceipts'));
+      $telTxt .= '; ' . ts('Fax: %1', array(1 => Civi::settings()->get('org_fax'), 'domain' => DOMAINS_CDNTAX_FR));
     }
     $pdf->Write(10, $telTxt, '', 0, 'R', TRUE, 0, FALSE, FALSE, 0);
     $pdf->SetFont('Helvetica', 'I', 8);
@@ -444,9 +444,10 @@ function _cdntaxreceiptsfr_writeReceipt(&$pdf, $pdf_variables) {
     $emailTxt = ts('Email: %1; Website: %2', array(
       1 => Civi::settings()->get('org_email'),
       2 => Civi::settings()->get('org_web'),
-      'domain' => 'org.civicrm.cdntaxreceipts')
+      'domain' => DOMAINS_CDNTAX_FR
+      )
     );
-    $registrationTxt = ts('Charitable Registration: %1', array(1 => Civi::settings()->get('org_charitable_no'), 'domain' => 'org.civicrm.cdntaxreceipts'));
+    $registrationTxt = ts('Charitable Registration: %1', array(1 => Civi::settings()->get('org_charitable_no'), 'domain' => DOMAINS_CDNTAX_FR));
 
     $pdf->Write(10, $emailTxt, '', 0, 'R', TRUE, 0, FALSE, FALSE, 0);
     $pdf->SetY($mymargin_top + 20);
@@ -465,14 +466,14 @@ function _cdntaxreceiptsfr_writeReceipt(&$pdf, $pdf_variables) {
   }
   $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 6);
   $pdf->SetFont('Helvetica', 'B', 8);
-  $pdf->Write(10, ts("Issue Date: %1", array(1 => $issued_on, 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
+  $pdf->Write(10, ts("Issue Date: %1", array(1 => $issued_on, 'domain' => DOMAINS_CDNTAX_FR)));
   $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 12);
-  $pdf->Write(10, ts("Received on: %1", array(1 => $display_date, 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
+  $pdf->Write(10, ts("Received on: %1", array(1 => $display_date, 'domain' => DOMAINS_CDNTAX_FR)));
   $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 18);
-  $pdf->Write(10, ts("Eligible Amount:  $%1", array(1 => number_format($amount, 2), 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
+  $pdf->Write(10, ts("Eligible Amount:  $%1", array(1 => number_format($amount, 2), 'domain' => DOMAINS_CDNTAX_FR)));
   $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 24);
   // JMA Addition
-  $pdf->Write(10, ts("Total Amount:  $%1", array(1 => number_format($contribution_amount, 2), 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
+  $pdf->Write(10, ts("Total Amount:  $%1", array(1 => number_format($contribution_amount, 2), 'domain' => DOMAINS_CDNTAX_FR)));
   $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 34);
 
   if ($issue_type == 'annual') {
@@ -501,10 +502,10 @@ function _cdntaxreceiptsfr_writeReceipt(&$pdf, $pdf_variables) {
   // Left section
   $pdf->SetFont('Helvetica', 'B', 8);
   $pdf->SetY($mymargin_top + $y_detailscolumnstart + 6);
-  $pdf->Write(10, ts("Receipt No: %1", array(1 => $receipt_number, 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
+  $pdf->Write(10, ts("Receipt No: %1", array(1 => $receipt_number, 'domain' => DOMAINS_CDNTAX_FR)));
   $pdf->SetFont('Helvetica', 'B', 8);
   $pdf->SetY($mymargin_top + $y_detailscolumnstart + 10);
-  $pdf->Write(10, ts("Received from: ", array('domain' => 'org.civicrm.cdntaxreceiptsfr')), '', 0, 'L', TRUE, 0, FALSE, FALSE, 0);
+  $pdf->Write(10, ts("Received from: ", array('domain' => DOMAINS_CDNTAX_FR)), '', 0, 'L', TRUE, 0, FALSE, FALSE, 0);
   $pdf->SetFont('Helvetica', 'B', 10);
   $pdf->SetXY($mymargin_left+10, $mymargin_top + $y_detailscolumnstart + 20);
   $pdf->Write(10, strtoupper($displayname), '', 0, 'L', TRUE, 0, FALSE, FALSE, 0);
@@ -534,11 +535,11 @@ function _cdntaxreceiptsfr_writeReceipt(&$pdf, $pdf_variables) {
   // If this is an in-kind donation
   if ( !empty($inkind_values) ) {
     $valueAdvantage = ts('Value of advantage to:');
-    $inkind_str = ts('Donation In Kind: %1', array(1 => $inkind_values[0], 'domain' => 'org.civicrm.cdntaxreceiptsfr'));
+    $inkind_str = ts('Donation In Kind: %1', array(1 => $inkind_values[0], 'domain' => DOMAINS_CDNTAX_FR));
 
     if (!empty($inkind_values[3])) {
       if ($inkind_values[3] < $amount) {
-          $inkind_str .= ' - ' . ts('Cost: $%1', array(1 => $inkind_values[3], 'domain' => 'org.civicrm.cdntaxreceiptsfr'));
+          $inkind_str .= ' - ' . ts('Cost: $%1', array(1 => $inkind_values[3], 'domain' => DOMAINS_CDNTAX_FR));
       }
     }
 
@@ -549,13 +550,13 @@ function _cdntaxreceiptsfr_writeReceipt(&$pdf, $pdf_variables) {
     $pdf->SetFont('Helvetica', 'B', 8);
     $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 30);
 
-    $pdf->Write(10, ts("Appraiser: %1", array(1 => $inkind_values[1], 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
+    $pdf->Write(10, ts("Appraiser: %1", array(1 => $inkind_values[1], 'domain' => DOMAINS_CDNTAX_FR)));
     $pdf->SetXY($mymargin_left + $x_detailscolumn, $mymargin_top + $y_detailscolumnstart + 34);
 
     if (!empty($inkind_values[2])) {
       $addressString = wordwrap($inkind_values[2], 20, CRM_Core_DAO::VALUE_SEPARATOR);
       $lines = explode(CRM_Core_DAO::VALUE_SEPARATOR, $addressString);
-      $pdf->Write(10, ts("Address of Appraiser: %1", array(1 => $lines[0], 'domain' => 'org.civicrm.cdntaxreceiptsfr')));
+      $pdf->Write(10, ts("Address of Appraiser: %1", array(1 => $lines[0], 'domain' => DOMAINS_CDNTAX_FR)));
       $pdf->SetXY($mymargin_left + $x_detailscolumn + 30, $mymargin_top + $y_detailscolumnstart + 38);
       foreach ($lines as $key => $line) {
         if ($key) {
@@ -588,17 +589,17 @@ function _cdntaxreceiptsfr_writeReceipt(&$pdf, $pdf_variables) {
     $pdf->Write(10, $line_1, '', 0, 'L', TRUE, 0, FALSE, FALSE, 0);
     $pdf->SetFont('Helvetica', '', 8);
     $pdf->SetY($mymargin_top + 86, 0, 'L', TRUE, 0, FALSE, FALSE, 0);
-    $pdf->Write(10, ts('Canada Revenue Agency: canada.ca/charities-giving', array('domain' => 'org.civicrm.cdntaxreceiptsfr')));
+    $pdf->Write(10, ts('Canada Revenue Agency: canada.ca/charities-giving', array('domain' => DOMAINS_CDNTAX_FR)));
 
     // Bottom center section
     $pdf->SetFont('Helvetica', 'B', 8);
     $pdf->SetXY($mymargin_left + 92, $mymargin_top + 82);
-    $pdf->Write(10, ts('Thank you!', array('domain' => 'org.civicrm.cdntaxreceiptsfr')));
+    $pdf->Write(10, ts('Thank you!', array('domain' => DOMAINS_CDNTAX_FR)));
 
     // Bottom right section
     $signature = Civi::settings()->get('receipt_authorized_signature_text');
     if ( $signature == '' ) {
-      $signature = ts('Authorized Signature', array('domain' => 'org.civicrm.cdntaxreceiptsfr'));
+      $signature = ts('Authorized Signature', array('domain' => DOMAINS_CDNTAX_FR));
     }
     $sig_offset = strlen($signature) - 20;
     $sig_image = _cdntaxreceiptsfr_get_image_filepath('receipt_signature');
@@ -1469,7 +1470,7 @@ function _cdntaxreceiptsfr_get_location(): string {
   $city = \Civi::settings()->get('receipt_location_issued');
   if (empty($city)) {
     CRM_Core_Error::statusBounce(
-      ts('Location Issued is not set. Please set it under Administer - CiviContribute - CDN Tax Receipts.', array('domain' => 'org.civicrm.cdntaxreceipts')),
+      ts('Location Issued is not set. Please set it under Administer - CiviContribute - CDN Tax Receipts FR.', array('domain' => DOMAINS_CDNTAX_FR)),
       CRM_Utils_System::url('civicrm/cdntaxreceiptsfr/settings', 'reset=1')
     );
   }
