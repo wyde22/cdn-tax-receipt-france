@@ -21,7 +21,7 @@ class CRM_Cdntaxreceiptsfr_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_
 
     //check for permission to edit contributions
     if ( ! CRM_Core_Permission::check('issue cdn tax receipts') ) {
-      CRM_Core_Error::fatal(ts('You do not have permission to access this page', array('domain' => 'org.civicrm.cdntaxreceipts')));
+      CRM_Core_Error::fatal(ts('You do not have permission to access this page', array('domain' => DOMAINS_CDNTAX_FR)));
     }
 
     parent::preProcess();
@@ -62,9 +62,9 @@ class CRM_Cdntaxreceiptsfr_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_
    */
   function buildQuickForm() {
 
-    CRM_Utils_System::setTitle(ts('Issue Annual Tax Receipts', array('domain' => 'org.civicrm.cdntaxreceipts')));
+    CRM_Utils_System::setTitle(ts('Issue Annual Tax Receipts', array('domain' => DOMAINS_CDNTAX_FR)));
 
-    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.cdntaxreceipts', 'css/civicrm_cdntaxreceipts.css');
+    CRM_Core_Resources::singleton()->addStyleFile(DOMAINS_CDNTAX_FR, 'css/civicrm_cdntaxreceipts.css');
 
     // assign the counts
     $receipts = $this->_receipts;
@@ -84,16 +84,16 @@ class CRM_Cdntaxreceiptsfr_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_
     foreach ( $this->_years as $year ) {
       $this->addElement('radio', 'receipt_year', NULL, $year, 'issue_' . $year);
     }
-    $this->addRule('receipt_year', ts('Selection required', array('domain' => 'org.civicrm.cdntaxreceipts')), 'required');
+    $this->addRule('receipt_year', ts('Selection required', array('domain' => DOMAINS_CDNTAX_FR)), 'required');
 
     if ($delivery_method != CDNTAX_FR_DELIVERY_DATA_ONLY) {
-      $this->add('checkbox', 'is_preview', ts('Run in preview mode?', array('domain' => 'org.civicrm.cdntaxreceipts')));
+      $this->add('checkbox', 'is_preview', ts('Run in preview mode?', array('domain' => DOMAINS_CDNTAX_FR)));
     }
 
     $buttons = array(
       array(
         'type' => 'cancel',
-        'name' => ts('Back', array('domain' => 'org.civicrm.cdntaxreceipts')),
+        'name' => ts('Back', array('domain' => DOMAINS_CDNTAX_FR)),
       ),
       array(
         'type' => 'next',
@@ -156,7 +156,7 @@ class CRM_Cdntaxreceiptsfr_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_
       $contributions = cdntaxreceiptsfr_contributions_not_receipted($contactId, $year);
 
       if ( $emailCount + $printCount + $failCount >= self::MAX_RECEIPT_COUNT ) {
-        $status = ts('Maximum of %1 tax receipt(s) were sent. Please repeat to continue processing.', array(1=>self::MAX_RECEIPT_COUNT, 'domain' => 'org.civicrm.cdntaxreceipts'));
+        $status = ts('Maximum of %1 tax receipt(s) were sent. Please repeat to continue processing.', array(1=>self::MAX_RECEIPT_COUNT, 'domain' => DOMAINS_CDNTAX_FR));
         CRM_Core_Session::setStatus($status, '', 'info');
         break;
       }
@@ -182,26 +182,26 @@ class CRM_Cdntaxreceiptsfr_Task_IssueAnnualTaxReceipts extends CRM_Contact_Form_
 
     // 3. Set session status
     if ( $previewMode ) {
-      $status = ts('%1 tax receipt(s) have been previewed.  No receipts have been issued.', array(1=>$printCount, 'domain' => 'org.civicrm.cdntaxreceipts'));
+      $status = ts('%1 tax receipt(s) have been previewed.  No receipts have been issued.', array(1=>$printCount, 'domain' => DOMAINS_CDNTAX_FR));
       CRM_Core_Session::setStatus($status, '', 'success');
     }
     else {
       if ($emailCount > 0) {
-        $status = ts('%1 tax receipt(s) were sent by email.', array(1=>$emailCount, 'domain' => 'org.civicrm.cdntaxreceipts'));
+        $status = ts('%1 tax receipt(s) were sent by email.', array(1=>$emailCount, 'domain' => DOMAINS_CDNTAX_FR));
         CRM_Core_Session::setStatus($status, '', 'success');
       }
       if ($printCount > 0) {
-        $status = ts('%1 tax receipt(s) need to be printed.', array(1=>$printCount, 'domain' => 'org.civicrm.cdntaxreceipts'));
+        $status = ts('%1 tax receipt(s) need to be printed.', array(1=>$printCount, 'domain' => DOMAINS_CDNTAX_FR));
         CRM_Core_Session::setStatus($status, '', 'success');
       }
       if ($dataCount > 0) {
-        $status = ts('Data for %1 tax receipt(s) is available in the Tax Receipts Issued report.', array(1=>$dataCount, 'domain' => 'org.civicrm.cdntaxreceipts'));
+        $status = ts('Data for %1 tax receipt(s) is available in the Tax Receipts Issued report.', array(1=>$dataCount, 'domain' => DOMAINS_CDNTAX_FR));
         CRM_Core_Session::setStatus($status, '', 'success');
       }
     }
 
     if ( $failCount > 0 ) {
-      $status = ts('%1 tax receipt(s) failed to process.', array(1=>$failCount, 'domain' => 'org.civicrm.cdntaxreceipts'));
+      $status = ts('%1 tax receipt(s) failed to process.', array(1=>$failCount, 'domain' => DOMAINS_CDNTAX_FR));
       CRM_Core_Session::setStatus($status, '', 'error');
     }
 

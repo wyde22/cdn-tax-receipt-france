@@ -48,7 +48,7 @@ class CRM_Cdntaxreceiptsfr_Upgrader_Base {
   public static function instance() {
     if (!self::$instance) {
       self::$instance = new CRM_Cdntaxreceiptsfr_Upgrader(
-        'org.civicrm.cdntaxreceipts',
+        'org.civicrm.cdntaxreceiptsfr',
         E::path()
       );
     }

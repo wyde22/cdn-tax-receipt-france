@@ -21,7 +21,7 @@ class CRM_Cdntaxreceiptsfr_Upgrader extends CRM_Cdntaxreceiptsfr_Upgrader_Base {
 Attached please find your official tax receipt for income tax purposes.
 
 {$orgName}';
-    $email_subject = 'Your tax receipt {$receipt.receipt_no}';
+    $email_subject = 'Your tax receipt FR {$receipt.receipt_no}';
 
     $this->_create_message_template($email_message, $email_subject);
     $this->_setSourceDefaults();
@@ -69,7 +69,7 @@ Attached please find your official tax receipt for income tax purposes.
   protected function createTables() {
     $character_settings = $this->getDatabaseCharacterSettings();
 
-    CRM_Core_DAO::executeQuery("CREATE TABLE cdntaxreceipts_log (
+    CRM_Core_DAO::executeQuery("CREATE TABLE cdntaxreceiptsfr_log (
 id int(11) NOT NULL AUTO_INCREMENT COMMENT 'The internal id of the issuance.',
 receipt_no varchar(128) NOT NULL  COMMENT 'Receipt Number.',
 issued_on int(11) NOT NULL COMMENT 'Unix timestamp of when the receipt was issued, or re-issued.',
@@ -86,11 +86,11 @@ email_opened datetime NULL COMMENT 'Timestamp an email open event was detected.'
 PRIMARY KEY (id),
 INDEX contact_id (contact_id),
 INDEX receipt_no (receipt_no)
-) ENGINE=InnoDB DEFAULT CHARSET={$character_settings['charset']} COLLATE {$character_settings['collation']} COMMENT='Log file of tax receipt issuing.'");
+) ENGINE=InnoDB DEFAULT CHARSET={$character_settings['charset']} COLLATE {$character_settings['collation']} COMMENT='Log file of tax receipt fr issuing.'");
 
     // The contribution_id is *deliberately* not a foreign key to civicrm_contribution.
     // We don't want to destroy audit records if contributions are deleted.
-    CRM_Core_DAO::executeQuery("CREATE TABLE cdntaxreceipts_log_contributions (
+    CRM_Core_DAO::executeQuery("CREATE TABLE cdntaxreceiptsfr_log_contributions (
 id int(11) NOT NULL AUTO_INCREMENT COMMENT 'The internal id of this line.',
 receipt_id int(11) NOT NULL COMMENT 'The internal receipt ID this line belongs to.',
 contribution_id int(10) unsigned NOT NULL COMMENT 'CiviCRM contribution id for which the receipt is issued.',
@@ -100,9 +100,9 @@ receive_date datetime NOT NULL COMMENT 'Date on which the contribution was recei
 PRIMARY KEY (id),
 FOREIGN KEY (receipt_id) REFERENCES cdntaxreceipts_log(id),
 INDEX contribution_id (contribution_id)
-) ENGINE=InnoDB DEFAULT CHARSET={$character_settings['charset']} COLLATE {$character_settings['collation']} COMMENT='Contributions for each tax receipt issuing.'");
+) ENGINE=InnoDB DEFAULT CHARSET={$character_settings['charset']} COLLATE {$character_settings['collation']} COMMENT='Contributions for each tax receipt fr issuing.'");
 
-    CRM_Core_DAO::executeQuery("CREATE TABLE cdntaxreceipts_advantage (
+    CRM_Core_DAO::executeQuery("CREATE TABLE cdntaxreceiptsfr_advantage (
 id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 contribution_id int(10) UNSIGNED NOT NULL,
 advantage_description varchar(255) DEFAULT NULL,
@@ -124,17 +124,17 @@ SELECT COUNT(*) as col_count
 FROM information_schema.COLUMNS
 WHERE
     TABLE_SCHEMA = '{$db_name}'
-AND TABLE_NAME = 'cdntaxreceipts_log'
+AND TABLE_NAME = 'cdntaxreceiptsfr_log'
 AND COLUMN_NAME = 'receipt_status'");
     if ($dao->fetch()) {
       if ($dao->col_count == 0) {
-        CRM_Core_DAO::executeQuery("ALTER TABLE cdntaxreceipts_log ADD COLUMN receipt_status varchar(10) DEFAULT 'issued'");
+        CRM_Core_DAO::executeQuery("ALTER TABLE cdntaxreceiptsfr_log ADD COLUMN receipt_status varchar(10) DEFAULT 'issued'");
         $ndao =& CRM_Core_DAO::executeQuery("
 SELECT COUNT(*) as col_count
 FROM information_schema.COLUMNS
 WHERE
     TABLE_SCHEMA = '{$db_name}'
-AND TABLE_NAME = 'cdntaxreceipts_log'
+AND TABLE_NAME = 'cdntaxreceiptsfr_log'
 AND COLUMN_NAME = 'receipt_status'");
         if ($ndao->fetch()) {
           if ($ndao->col_count == 1) {
@@ -152,9 +152,9 @@ AND COLUMN_NAME = 'receipt_status'");
    */
   public function upgrade_1321() {
     $this->ctx->log->info('Applying update 1321: Email Tracking');
-    CRM_Core_DAO::executeQuery('ALTER TABLE cdntaxreceipts_log ADD email_tracking_id varchar(64) NULL');
-    CRM_Core_DAO::executeQuery('ALTER TABLE cdntaxreceipts_log ADD email_opened datetime NULL');
-    CRM_Core_DAO::executeQuery('CREATE INDEX contribution_id ON cdntaxreceipts_log_contributions (contribution_id)');
+    CRM_Core_DAO::executeQuery('ALTER TABLE cdntaxreceiptsfr_log ADD email_tracking_id varchar(64) NULL');
+    CRM_Core_DAO::executeQuery('ALTER TABLE cdntaxreceiptsfr_log ADD email_opened datetime NULL');
+    CRM_Core_DAO::executeQuery('CREATE INDEX contribution_id ON cdntaxreceiptsfr_log_contributions (contribution_id)');
     return TRUE;
   }
 
@@ -193,7 +193,7 @@ AND COLUMN_NAME = 'receipt_status'");
 
   public function upgrade_1510() {
     $this->ctx->log->info('Applying update 1510: Adding gift advantage description table');
-    $sql = "CREATE TABLE IF NOT EXISTS cdntaxreceipts_advantage (
+    $sql = "CREATE TABLE IF NOT EXISTS cdntaxreceiptsfr_advantage (
       id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
       contribution_id int(10) UNSIGNED NOT NULL,
       advantage_description varchar(255) DEFAULT NULL,
@@ -321,24 +321,24 @@ AND COLUMN_NAME = 'receipt_status'");
     // create message template for email that accompanies tax receipts
     $params = array(
       'sequential' => 1,
-      'name' => 'msg_tpl_workflow_cdntaxreceipts',
-      'title' => 'Message Template Workflow for CDN Tax Receipts',
-      'description' => 'Message Template Workflow for CDN Tax Receipts',
+      'name' => 'msg_tpl_workflow_cdntaxreceiptsfr',
+      'title' => 'Message Template Workflow for CDN Tax Receipts FR',
+      'description' => 'Message Template Workflow for CDN Tax Receipts FR',
       'is_reserved' => 1,
       'is_active' => 1,
       'api.OptionValue.create' => array(
         '0' => array(
-          'label' => 'CDN Tax Receipts - Email Single Receipt',
+          'label' => 'CDN Tax Receipts FR - Email Single Receipt',
           'value' => 1,
-          'name' => 'cdntaxreceipts_receipt_single',
+          'name' => 'cdntaxreceiptsfr_receipt_single',
           'is_reserved' => 1,
           'is_active' => 1,
           'format.only_id' => 1,
         ),
         '1' => array(
-          'label' => 'CDN Tax Receipts - Email Annual/Aggregate Receipt',
+          'label' => 'CDN Tax Receipts FR - Email Annual/Aggregate Receipt',
           'value' => 2,
-          'name' => 'cdntaxreceipts_receipt_aggregate',
+          'name' => 'cdntaxreceiptsfr_receipt_aggregate',
           'is_reserved' => 1,
           'is_active' => 1,
           'format.only_id' => 1,
@@ -348,7 +348,7 @@ AND COLUMN_NAME = 'receipt_status'");
     $result = civicrm_api3('OptionGroup', 'create', $params);
 
     $params = array(
-      'msg_title' => 'CDN Tax Receipts - Email Single Receipt',
+      'msg_title' => 'CDN Tax Receipts FR - Email Single Receipt',
       'msg_subject' => $email_subject,
       'msg_text' => $email_message,
       'msg_html' => $html_message,
@@ -359,7 +359,7 @@ AND COLUMN_NAME = 'receipt_status'");
     civicrm_api3('MessageTemplate', 'create', $params);
 
     $params = array(
-      'msg_title' => 'CDN Tax Receipts - Email Annual/Aggregate Receipt',
+      'msg_title' => 'CDN Tax Receipts FR - Email Annual/Aggregate Receipt',
       'msg_subject' => $email_subject,
       'msg_text' => $email_message,
       'msg_html' => $html_message,
@@ -378,12 +378,12 @@ AND COLUMN_NAME = 'receipt_status'");
     if ($locales) {
       foreach ($locales as $locale) {
         // The space in "Source: " is not a typo.
-        \Civi::settings()->set('cdntaxreceipts_source_label_' . $locale, ts('Source: ', array('domain' => 'org.civicrm.cdntaxreceipts')));
+        \Civi::settings()->set('cdntaxreceipts_source_label_' . $locale, ts('Source: ', array('domain' => DOMAINS_CDNTAX_FR)));
       }
     }
     else {
       // The space in "Source: " is not a typo.
-      \Civi::settings()->set('cdntaxreceipts_source_label_' . CRM_Core_I18n::getLocale(), ts('Source: ', array('domain' => 'org.civicrm.cdntaxreceipts')));
+      \Civi::settings()->set('cdntaxreceipts_source_label_' . CRM_Core_I18n::getLocale(), ts('Source: ', array('domain' => DOMAINS_CDNTAX_FR)));
     }
   }
 

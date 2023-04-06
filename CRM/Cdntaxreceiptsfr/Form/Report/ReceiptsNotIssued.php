@@ -22,7 +22,7 @@ class CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued extends CRM_Report_Form
         'fields' =>
         array(
           'sort_name' =>
-          array('title' => ts('Contact Name', array('domain' => 'org.civicrm.cdntaxreceipts')),
+          array('title' => ts('Contact Name', array('domain' => DOMAINS_CDNTAX_FR)),
             'required' => TRUE,
           ),
           'id' =>
@@ -36,7 +36,7 @@ class CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued extends CRM_Report_Form
         array(
           'sort_name' =>
           array(
-            'title' => ts('Last Name, First Name', array('domain' => 'org.civicrm.cdntaxreceipts')),
+            'title' => ts('Last Name, First Name', array('domain' => DOMAINS_CDNTAX_FR)),
           ),
         ),
       ),
@@ -71,7 +71,7 @@ class CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued extends CRM_Report_Form
 	    'type' => CRM_Utils_Type::T_STRING,
 	  ),
           'financial_type_id' =>
-          array('title' => ts('Financial Type', array('domain' => 'org.civicrm.cdntaxreceipts')),
+          array('title' => ts('Financial Type', array('domain' => DOMAINS_CDNTAX_FR)),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Contribute_PseudoConstant::financialType(),
             'type' => CRM_Utils_Type::T_INT,
@@ -97,7 +97,7 @@ class CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued extends CRM_Report_Form
     }
     $this->_options =
       array(
-        'use_advanced_eligibility' => array('title' => ts('Use Advanced Eligibility (Hooks - Memory Intensive)', array('domain' => 'org.civicrm.cdntaxreceipts')),
+        'use_advanced_eligibility' => array('title' => ts('Use Advanced Eligibility (Hooks - Memory Intensive)', array('domain' => DOMAINS_CDNTAX_FR)),
           'type' => 'select',
           'options' => $enable_options,
         ),
@@ -111,7 +111,7 @@ class CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued extends CRM_Report_Form
     //check for permission to edit contributions
     if ( ! CRM_Core_Permission::check('access CiviContribute') ) {
       require_once('CRM/Core/Error.php');
-      CRM_Core_Error::fatal(ts('You do not have permission to access this page', array('domain' => 'org.civicrm.cdntaxreceipts')));
+      CRM_Core_Error::fatal(ts('You do not have permission to access this page', array('domain' => DOMAINS_CDNTAX_FR)));
     }
   }
 
@@ -155,12 +155,12 @@ class CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued extends CRM_Report_Form
                    {$this->_aliases['civicrm_contribution']}.is_test = 0
         LEFT  JOIN civicrm_financial_type {$this->_aliases['civicrm_financial_type']}
                 ON {$this->_aliases['civicrm_contribution']}.financial_type_id ={$this->_aliases['civicrm_financial_type']}.id
-        LEFT  JOIN cdntaxreceipts_log_contributions cdntax_c
+        LEFT  JOIN cdntaxreceiptsfr_log_contributions cdntax_c
                 ON {$this->_aliases['civicrm_contribution']}.id = cdntax_c.contribution_id ";
 
     if ($includeTemp && $this->_useEligibilityHooks) {
       $this->_from .= "
-        LEFT JOIN cdntaxreceipts_temp_civireport_eligible cdntax_t
+        LEFT JOIN cdntaxreceiptsfr_temp_civireport_eligible cdntax_t
                 ON {$this->_aliases['civicrm_contribution']}.id = cdntax_t.contribution_id ";
     }
   }
@@ -213,7 +213,7 @@ class CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued extends CRM_Report_Form
 
   function createTempEligibilityTable() {
     $sql = "
-CREATE TEMPORARY TABLE cdntaxreceipts_temp_civireport_eligible (
+CREATE TEMPORARY TABLE cdntaxreceiptsfr_temp_civireport_eligible (
   contribution_id int unsigned,
   eligible_amount decimal(20,2)
 ) ENGINE=HEAP DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
@@ -236,7 +236,7 @@ CREATE TEMPORARY TABLE cdntaxreceipts_temp_civireport_eligible (
     while ( $dao->fetch() ) {
       if ( cdntaxreceiptsfr_eligibleForReceipt($dao->id) ) {
         $amount = cdntaxreceiptsfr_eligibleAmount($dao->id);
-        $sql = "INSERT INTO cdntaxreceipts_temp_civireport_eligible (contribution_id,eligible_amount)
+        $sql = "INSERT INTO cdntaxreceiptsfr_temp_civireport_eligible (contribution_id,eligible_amount)
                 VALUES ($dao->id, $amount)";
         CRM_Core_DAO::executeQuery($sql);
       }

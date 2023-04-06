@@ -1,6 +1,6 @@
 
 {if $pdf_file}
-{capture assign="file_url"}{crmURL p='civicrm/cdntaxreceipts/view' q="id=$contribution_id&cid=$contact_id&download=1"}{/capture}
+{capture assign="file_url"}{crmURL p='civicrm/cdntaxreceiptsfr/view' q="id=$contribution_id&cid=$contact_id&download=1"}{/capture}
 <script type="text/javascript">
 cj(document).ready(
   function() {ldelim}
@@ -51,40 +51,40 @@ cj(document).ready(
 {/if}
 
 {if $reissue eq 0}
-  <h3>{ts domain='org.civicrm.cdntaxreceipts'}A tax receipt has not been issued for this contribution.{/ts}</h3>
+  <h3>{ts domain='org.civicrm.cdntaxreceiptsfr'}A tax receipt has not been issued for this contribution.{/ts}</h3>
   {if call_user_func(array('CRM_Core_Permission','check'), 'issue cdn tax receipts')}
-    <p>{ts domain='org.civicrm.cdntaxreceipts'}Click '{$buttonLabel}' to issue a tax receipt for this contribution.
+    <p>{ts domain='org.civicrm.cdntaxreceiptsfr'}Click '{$buttonLabel}' to issue a tax receipt for this contribution.
     This action cannot be undone. The tax receipt will be logged for auditing purposes,
     and a copy of the receipt will be submitted to the tax receipt archive.{/ts}</p>
     {if $method eq 'email'}
-      <p>{ts domain='org.civicrm.cdntaxreceipts' 1=$receiptEmail}The receipt will be sent <strong>by email</strong> to the contributor (%1).{/ts}<br />
-      {$form.printOverride.html}{ts domain='org.civicrm.cdntaxreceipts' 1=$receiptEmail}Download PDF instead.{/ts}
+      <p>{ts domain='org.civicrm.cdntaxreceiptsfr' 1=$receiptEmail}The receipt will be sent <strong>by email</strong> to the contributor (%1).{/ts}<br />
+      {$form.printOverride.html}{ts domain='org.civicrm.cdntaxreceiptsfr' 1=$receiptEmail}Download PDF instead.{/ts}
       </p>
     {elseif $method eq 'print'}
-      <p class='status-warning'>{ts domain='org.civicrm.cdntaxreceipts'}Please <strong>download and print</strong> the receipt that
+      <p class='status-warning'>{ts domain='org.civicrm.cdntaxreceiptsfr'}Please <strong>download and print</strong> the receipt that
       is generated. You will need to send a printed copy to the contributor.{/ts}</p>
     {/if}
   {else}
-    <p>{ts domain='org.civicrm.cdntaxreceipts'}You do not have sufficient authorization to issue tax receipts.{/ts}</p>
+    <p>{ts domain='org.civicrm.cdntaxreceiptsfr'}You do not have sufficient authorization to issue tax receipts.{/ts}</p>
   {/if}
 {elseif $reissue eq 1}
-  <h3>{ts domain='org.civicrm.cdntaxreceipts'}Re-Issue Tax Receipt{/ts}</h3>
+  <h3>{ts domain='org.civicrm.cdntaxreceiptsfr'}Re-Issue Tax Receipt{/ts}</h3>
   {if call_user_func(array('CRM_Core_Permission','check'), 'issue cdn tax receipts')}
     {if $isCancelled}
-      <p>{ts domain='org.civicrm.cdntaxreceipts' 1=$buttonLabel}Click '%1' to re-issue a tax receipt for this contribution. The tax receipt will be marked 'Cancelled' with the same receipt number and amount as the original copy.{/ts}</p>
+      <p>{ts domain='org.civicrm.cdntaxreceiptsfr' 1=$buttonLabel}Click '%1' to re-issue a tax receipt for this contribution. The tax receipt will be marked 'Cancelled' with the same receipt number and amount as the original copy.{/ts}</p>
     {else}
-      <p>{ts domain='org.civicrm.cdntaxreceipts' 1=$buttonLabel}Click '%1' to re-issue a tax receipt for this contribution. The tax receipt will be marked 'Duplicate' with the same receipt number and amount as the original copy.{/ts}</p>
+      <p>{ts domain='org.civicrm.cdntaxreceiptsfr' 1=$buttonLabel}Click '%1' to re-issue a tax receipt for this contribution. The tax receipt will be marked 'Duplicate' with the same receipt number and amount as the original copy.{/ts}</p>
     {/if}
     {if $method eq 'email'}
-      <p>{ts domain='org.civicrm.cdntaxreceipts' 1=$receiptEmail}The receipt will be sent <strong>by email</strong> to the contributor (%1).{/ts}<br />
-      {$form.printOverride.html}{ts domain='org.civicrm.cdntaxreceipts'}Download PDF instead.{/ts}
+      <p>{ts domain='org.civicrm.cdntaxreceiptsfr' 1=$receiptEmail}The receipt will be sent <strong>by email</strong> to the contributor (%1).{/ts}<br />
+      {$form.printOverride.html}{ts domain='org.civicrm.cdntaxreceiptsfr'}Download PDF instead.{/ts}
       </p>
     {elseif $method eq 'print'}
-      <p class='status-warning'>{ts domain='org.civicrm.cdntaxreceipts'}Please <strong>download and print</strong> the receipt that
+      <p class='status-warning'>{ts domain='org.civicrm.cdntaxreceiptsfr'}Please <strong>download and print</strong> the receipt that
       is generated. You will need to send a printed copy to the contributor.{/ts}</p>
     {/if}
   {else}
-    <p>{ts domain='org.civicrm.cdntaxreceipts'}You do not have sufficient authorization to re-issue tax receipts.{/ts}</p>
+    <p>{ts domain='org.civicrm.cdntaxreceiptsfr'}You do not have sufficient authorization to re-issue tax receipts.{/ts}</p>
   {/if}
 {/if}
 

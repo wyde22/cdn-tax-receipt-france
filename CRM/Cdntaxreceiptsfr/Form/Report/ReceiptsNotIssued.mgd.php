@@ -11,10 +11,10 @@ return array (
     'params' => 
     array (
       'version' => 3,
-      'label' => 'Tax Receipts - Receipts Not Issued',
-      'description' => 'Tax Receipts - Receipts Not Issued (org.civicrm.cdntaxreceipts)',
+      'label' => 'Tax Receipts FR - Receipts Not Issued',
+      'description' => 'Tax Receipts FR - Receipts Not Issued (org.civicrm.cdntaxreceiptsfr)',
       'class_name' => 'CRM_Cdntaxreceiptsfr_Form_Report_ReceiptsNotIssued',
-      'report_url' => 'cdntaxreceipts/receiptsnotissued',
+      'report_url' => 'cdntaxreceiptsfr/receiptsnotissued',
       'component' => 'CiviContribute',
     ),
   ),

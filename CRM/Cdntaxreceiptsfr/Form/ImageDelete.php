@@ -62,7 +62,7 @@ class CRM_Cdntaxreceiptsfr_Form_ImageDelete extends CRM_Core_Form {
     }
 
     CRM_Core_Session::setStatus(E::ts('The %1 file has been deleted.', array(1 => basename($filename))), '', 'success');
-    CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/cdntaxreceipts/settings', 'reset=1'));
+    CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/cdntaxreceiptsfr/settings', 'reset=1'));
   }
 
   /**

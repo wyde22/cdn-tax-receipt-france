@@ -22,7 +22,7 @@ class CRM_Cdntaxreceiptsfr_Task_IssueSingleTaxReceipts extends CRM_Contribute_Fo
 
     //check for permission to edit contributions
     if ( ! CRM_Core_Permission::check('issue cdn tax receipts') ) {
-      CRM_Core_Error::fatal(ts('You do not have permission to access this page', array('domain' => 'org.civicrm.cdntaxreceipts')));
+      CRM_Core_Error::fatal(ts('You do not have permission to access this page', array('domain' => DOMAINS_CDNTAX_FR)));
     }
 
     parent::preProcess();
@@ -53,7 +53,7 @@ class CRM_Cdntaxreceiptsfr_Task_IssueSingleTaxReceipts extends CRM_Contribute_Fo
    */
   function buildQuickForm() {
 
-    CRM_Utils_System::setTitle(ts('Issue Tax Receipts', array('domain' => 'org.civicrm.cdntaxreceipts')));
+    CRM_Utils_System::setTitle(ts('Issue Tax Receipts', array('domain' => DOMAINS_CDNTAX_FR)));
 
     // assign the counts
     $receipts = $this->_receipts;
@@ -69,18 +69,18 @@ class CRM_Cdntaxreceiptsfr_Task_IssueSingleTaxReceipts extends CRM_Contribute_Fo
     $this->assign('deliveryMethod', $delivery_method);
 
     // add radio buttons
-    $this->addElement('radio', 'receipt_option', NULL, ts('Issue tax receipts for the %1 unreceipted contributions only.', array(1=>$originalTotal, 'domain' => 'org.civicrm.cdntaxreceipts')), 'original_only');
-    $this->addElement('radio', 'receipt_option', NULL, ts('Issue tax receipts for all %1 contributions. Previously-receipted contributions will be marked \'duplicate\'.', array(1=>$receiptTotal, 'domain' => 'org.civicrm.cdntaxreceipts')), 'include_duplicates');
-    $this->addRule('receipt_option', ts('Selection required', array('domain' => 'org.civicrm.cdntaxreceipts')), 'required');
+    $this->addElement('radio', 'receipt_option', NULL, ts('Issue tax receipts for the %1 unreceipted contributions only.', array(1=>$originalTotal, 'domain' => DOMAINS_CDNTAX_FR)), 'original_only');
+    $this->addElement('radio', 'receipt_option', NULL, ts('Issue tax receipts for all %1 contributions. Previously-receipted contributions will be marked \'duplicate\'.', array(1=>$receiptTotal, 'domain' => DOMAINS_CDNTAX_FR)), 'include_duplicates');
+    $this->addRule('receipt_option', ts('Selection required', array('domain' => DOMAINS_CDNTAX_FR)), 'required');
 
     if ($delivery_method != CDNTAX_FR_DELIVERY_DATA_ONLY) {
-      $this->add('checkbox', 'is_preview', ts('Run in preview mode?', array('domain' => 'org.civicrm.cdntaxreceipts')));
+      $this->add('checkbox', 'is_preview', ts('Run in preview mode?', array('domain' => DOMAINS_CDNTAX_FR)));
     }
 
     $buttons = array(
       array(
         'type' => 'cancel',
-        'name' => ts('Back', array('domain' => 'org.civicrm.cdntaxreceipts')),
+        'name' => ts('Back', array('domain' => DOMAINS_CDNTAX_FR)),
       ),
       array(
         'type' => 'next',
@@ -143,7 +143,7 @@ class CRM_Cdntaxreceiptsfr_Task_IssueSingleTaxReceipts extends CRM_Contribute_Fo
       if ( $emailCount + $printCount + $failCount >= self::MAX_RECEIPT_COUNT ) {
         // limit email, print receipts as the pdf generation and email-to-archive consume
         // server resources. don't limit data-type receipts.
-        $status = ts('Maximum of %1 tax receipt(s) were sent. Please repeat to continue processing.', array(1=>self::MAX_RECEIPT_COUNT, 'domain' => 'org.civicrm.cdntaxreceipts'));
+        $status = ts('Maximum of %1 tax receipt(s) were sent. Please repeat to continue processing.', array(1=>self::MAX_RECEIPT_COUNT, 'domain' => DOMAINS_CDNTAX_FR));
         CRM_Core_Session::setStatus($status, '', 'info');
         break;
       }
@@ -152,7 +152,7 @@ class CRM_Cdntaxreceiptsfr_Task_IssueSingleTaxReceipts extends CRM_Contribute_Fo
       $contribution = new CRM_Contribute_DAO_Contribution();
       $contribution->id = $contributionId;
       if ( ! $contribution->find( TRUE ) ) {
-        CRM_Core_Error::fatal( "CDNTaxReceipts: Could not find corresponding contribution id." );
+        CRM_Core_Error::fatal( "CDNTaxReceipts FR: Could not find corresponding contribution id." );
       }
 
       // 2. If Contribution is eligible for receipting, issue the tax receipt.  Otherwise ignore.
@@ -182,26 +182,26 @@ class CRM_Cdntaxreceiptsfr_Task_IssueSingleTaxReceipts extends CRM_Contribute_Fo
 
     // 3. Set session status
     if ( $previewMode ) {
-      $status = ts('%1 tax receipt(s) have been previewed.  No receipts have been issued.', array(1=>$printCount, 'domain' => 'org.civicrm.cdntaxreceipts'));
+      $status = ts('%1 tax receipt(s) have been previewed.  No receipts have been issued.', array(1=>$printCount, 'domain' => DOMAINS_CDNTAX_FR));
       CRM_Core_Session::setStatus($status, '', 'success');
     }
     else {
       if ($emailCount > 0) {
-        $status = ts('%1 tax receipt(s) were sent by email.', array(1=>$emailCount, 'domain' => 'org.civicrm.cdntaxreceipts'));
+        $status = ts('%1 tax receipt(s) were sent by email.', array(1=>$emailCount, 'domain' => DOMAINS_CDNTAX_FR));
         CRM_Core_Session::setStatus($status, '', 'success');
       }
       if ($printCount > 0) {
-        $status = ts('%1 tax receipt(s) need to be printed.', array(1=>$printCount, 'domain' => 'org.civicrm.cdntaxreceipts'));
+        $status = ts('%1 tax receipt(s) need to be printed.', array(1=>$printCount, 'domain' => DOMAINS_CDNTAX_FR));
         CRM_Core_Session::setStatus($status, '', 'success');
       }
       if ($dataCount > 0) {
-        $status = ts('Data for %1 tax receipt(s) is available in the Tax Receipts Issued report.', array(1=>$dataCount, 'domain' => 'org.civicrm.cdntaxreceipts'));
+        $status = ts('Data for %1 tax receipt(s) is available in the Tax Receipts Issued report.', array(1=>$dataCount, 'domain' => DOMAINS_CDNTAX_FR));
         CRM_Core_Session::setStatus($status, '', 'success');
       }
     }
 
     if ( $failCount > 0 ) {
-      $status = ts('%1 tax receipt(s) failed to process.', array(1=>$failCount, 'domain' => 'org.civicrm.cdntaxreceipts'));
+      $status = ts('%1 tax receipt(s) failed to process.', array(1=>$failCount, 'domain' => DOMAINS_CDNTAX_FR));
       CRM_Core_Session::setStatus($status, '', 'error');
     }
 
