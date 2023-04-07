@@ -64,7 +64,6 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
       $this->add('text', 'org_fax', ts('Fax', array('domain' => DOMAINS_CDNTAX_FR)));
       $this->add('text', 'org_email', ts('Email', array('domain' => DOMAINS_CDNTAX_FR)));
       $this->add('text', 'org_web', ts('Website', array('domain' => DOMAINS_CDNTAX_FR)));
-      $this->add('text', 'org_charitable_no', ts('Charitable Registration Number', array('domain' => DOMAINS_CDNTAX_FR)));
 
       $this->addRule('org_name', 'Enter Organization Name', 'required');
       $this->addRule('org_address_line1', 'Enter Address Line 1', 'required');
@@ -72,7 +71,6 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
       $this->addRule('org_tel', 'Enter Telephone', 'required');
       $this->addRule('org_email', 'Enter Email', 'required');
       $this->addRule('org_web', 'Enter Website', 'required');
-      $this->addRule('org_charitable_no', 'Enter Charitable Number', 'required');
     }
     else if ( $mode == 'defaults' ) {
       $defaults = array(

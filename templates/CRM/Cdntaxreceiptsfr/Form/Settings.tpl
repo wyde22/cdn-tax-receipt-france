@@ -138,11 +138,6 @@
               <p class="description">www.my.org</p></td>
           </tr>
           <tr>
-            <td class="label">{$form.org_charitable_no.label}</td>
-            <td class="content">{$form.org_charitable_no.html}
-              <p class="description">10000-000-RR0000</p></td>
-          </tr>
-          <tr>
             <td class="label">{$form.receipt_authorized_signature_text.label}</td>
             <td class="content">{$form.receipt_authorized_signature_text.html}
               <p class="description">{ts domain='org.civicrm.cdntaxreceiptsfr'}Name and position of the authorizing official to be displayed under the signature line. Defaults to "Authorized Signature" if no name is specified.{/ts}</p></td>
