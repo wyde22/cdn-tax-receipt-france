@@ -404,8 +404,8 @@ function cdntaxreceiptsfr_civicrm_navigationMenu(&$params) {
         if ('CiviContribute' == $child_value['attributes']['name']) {
           $params[$parent_key]['child'][$child_key]['child'][$navId] = array (
             'attributes' => array (
-              'label' => ts('CDN Tax Receipts',array('domain' => DOMAINS_CDNTAX_FR)),
-              'name' => 'CDN Tax Receipts',
+              'label' => ts('CDN Tax Receipts FR',array('domain' => DOMAINS_CDNTAX_FR)),
+              'name' => 'CDN Tax Receipts FR',
               'url' => 'civicrm/cdntaxreceiptsfr/settings?reset=1',
               'permission' => 'access CiviContribute,administer CiviCRM',
               'operator' => 'AND',
