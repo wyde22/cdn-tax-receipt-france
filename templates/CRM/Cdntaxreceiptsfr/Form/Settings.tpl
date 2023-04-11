@@ -71,7 +71,7 @@
     <tr>
       <td class="label">{$form.developper_or_not.label}</td>
       <td class="content">{$form.developper_or_not.html}
-        <p class="description">{ts domain='org.civicrm.cdntaxreceiptsfr'}Choose how generate your receipt ? : <br> generate your receipt with a model of message <br> generate your receipt with a TCPDF libraries (mode developper){/ts}</p></td>
+        <p class="description">{ts domain='org.civicrm.cdntaxreceiptsfr'}Choose how to issue your receipt ? : <br> issue your receipt with a message template <br> issue your receipt with TCPDF libraries (developper){/ts}</p></td>
     </tr>
     </tbody>
   </table>

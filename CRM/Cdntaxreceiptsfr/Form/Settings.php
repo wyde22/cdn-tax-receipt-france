@@ -204,10 +204,10 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
       $this->addGroup($yesno_options2, 'enable_advanced_eligibility_report', ts('Enable Advanced Eligibility Check?', array('domain' => DOMAINS_CDNTAX_FR)));
       
       $developperOrNot = array();
-      $developperOrNot[] = $this->createElement('radio', NULL, NULL, 'Mode model message', 0);
-      $developperOrNot[] = $this->createElement('radio', NULL, NULL, 'Mode developper', 1);
+      $developperOrNot[] = $this->createElement('radio', NULL, NULL, 'message template', 0);
+      $developperOrNot[] = $this->createElement('radio', NULL, NULL, 'developper', 1);
       
-      $this->addGroup($developperOrNot, 'developper_or_not', ts('How generate your receipt', array('domain' => DOMAINS_CDNTAX_FR)));
+      $this->addGroup($developperOrNot, 'developper_or_not', ts('How to issue your receipt', array('domain' => DOMAINS_CDNTAX_FR)));
     }
     else if ( $mode == 'defaults' ) {
       $defaults = array(
