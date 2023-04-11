@@ -85,7 +85,6 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
         'receipt_signature' => Civi::settings()->get('receipt_signature'),
         'receipt_watermark' => Civi::settings()->get('receipt_watermark'),
         'receipt_pdftemplate' => Civi::settings()->get('receipt_pdftemplate'),
-        'org_charitable_no' => Civi::settings()->get('org_charitable_no'),
       );
       return $defaults;
     }
@@ -98,7 +97,6 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
       Civi::settings()->set('org_fax', $values['org_fax']);
       Civi::settings()->set('org_email', $values['org_email']);
       Civi::settings()->set('org_web', $values['org_web']);
-      Civi::settings()->set('org_charitable_no', $values['org_charitable_no']);
     }
 
   }
@@ -154,7 +152,8 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
         'receipt_authorized_signature_text' => Civi::settings()->get('receipt_authorized_signature_text'),
         'source_field' => Civi::settings()->get('cdntaxreceipts_source_field') ?? '',
         'source_label' => Civi::settings()->get('cdntaxreceipts_source_label_' . CRM_Core_I18n::getLocale()) ?? '',
-        'modeltemp' => Civi::settings()->get('modeltemp')
+        'modeltemp' => Civi::settings()->get('modeltemp'),
+        'developper_or_not' => Civi::settings()->get('developper_or_not'),
       );
       return $defaults;
     }
@@ -165,6 +164,7 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
       Civi::settings()->set('cdntaxreceipts_source_field', $values['source_field']);
       Civi::settings()->set('cdntaxreceipts_source_label_' . CRM_Core_I18n::getLocale(), $values['source_label']);
       Civi::settings()->set('modeltemp',$values['modeltemp']);
+      Civi::settings()->set('developper_or_not', $values['developper_or_not']);
 
       foreach ( array('receipt_logo', 'receipt_signature', 'receipt_watermark', 'receipt_pdftemplate') as $key ) {
         $upload_file = $this->getSubmitValue($key);
@@ -202,6 +202,12 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
       $yesno_options2[] = $this->createElement('radio', NULL, NULL, 'Yes', 1);
       $yesno_options2[] = $this->createElement('radio', NULL, NULL, 'No', 0);
       $this->addGroup($yesno_options2, 'enable_advanced_eligibility_report', ts('Enable Advanced Eligibility Check?', array('domain' => DOMAINS_CDNTAX_FR)));
+      
+      $developperOrNot = array();
+      $developperOrNot[] = $this->createElement('radio', NULL, NULL, 'Mode model message', 0);
+      $developperOrNot[] = $this->createElement('radio', NULL, NULL, 'Mode developper', 1);
+      
+      $this->addGroup($developperOrNot, 'developper_or_not', ts('How generate your receipt', array('domain' => DOMAINS_CDNTAX_FR)));
     }
     else if ( $mode == 'defaults' ) {
       $defaults = array(
@@ -217,6 +223,7 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
       Civi::settings()->set('delivery_method', $values['delivery_method']);
       Civi::settings()->set('attach_to_workflows', $values['attach_to_workflows']);
       Civi::settings()->set('enable_advanced_eligibility_report', $values['enable_advanced_eligibility_report']);
+      Civi::settings()->get('developper_or_not');
       if (isset($values['issue_inkind']) == TRUE) {
         if ( $values['issue_inkind'] == 1 ) {
           cdntaxreceiptsfr_configure_inkind_fields();

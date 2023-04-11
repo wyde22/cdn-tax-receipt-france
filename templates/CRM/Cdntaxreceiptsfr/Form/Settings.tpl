@@ -3,7 +3,7 @@
   <h3>{ts domain='org.civicrm.cdntaxreceiptsfr'}Global settings{/ts}</h3>
 
   <div class="status message">
-    <strong>Tip:</strong>{ts domain='org.civicrm.cdntaxreceiptsfr'}This section is a global settings of the module (receipt prefx, email message, system option, ...){/ts}
+    <strong>Information:</strong>{ts domain='org.civicrm.cdntaxreceiptsfr'}This section is a global settings of the module (receipt prefx, email message, system option, ...){/ts}
   </div>
 
   <h3>{ts domain='org.civicrm.cdntaxreceiptsfr'}Settings receipt prefix{/ts}</h3>
@@ -66,11 +66,17 @@
     </tbody>
   </table>
 
-  <div class="help">
-    {ts domain='org.civicrm.cdntaxreceiptsfr'}Choose a setting for the template of receipt. Your receipt can create with a model of message of the CRM (HTML template) or with a TCPDF libraries for the developper{/ts}
-  </div>
+  <table class="form-layout wrapper-template-pdf" data-attributes="{$form.developper_or_not.value}">
+    <tbody>
+    <tr>
+      <td class="label">{$form.developper_or_not.label}</td>
+      <td class="content">{$form.developper_or_not.html}
+        <p class="description">{ts domain='org.civicrm.cdntaxreceiptsfr'}Choose how generate your receipt ? : <br> generate your receipt with a model of message <br> generate your receipt with a TCPDF libraries (mode developper){/ts}</p></td>
+    </tr>
+    </tbody>
+  </table>
 
-  <div class="crm-accordion-wrapper open">
+  <div class="crm-accordion-wrapper accordion-modeltemp open">
     <div class="crm-accordion-header">
       {ts domain='org.civicrm.cdntaxreceiptsfr'}Settings with model of message of CiviCRM{/ts}
     </div>
@@ -93,7 +99,7 @@
     </div>
   </div>
 
-  <div class="crm-accordion-wrapper open">
+  <div class="crm-accordion-wrapper accordion-developper open">
     <div class="crm-accordion-header">
       {ts domain='org.civicrm.cdntaxreceiptsfr'}Settings for the TCPDF libraries (developper section){/ts}
     </div>
@@ -204,3 +210,32 @@
 {* the InsertTokens needs this for some reason *}
 <div id="editMessageDetails"></div>
 {include file='CRM/Mailing/Form/InsertTokens.tpl'}
+
+{literal}
+  <script type="text/javascript">
+    CRM.$(function($){
+
+      const el = $('.wrapper-template-pdf');
+
+      $('.accordion-developper').hide();
+      $('.accordion-modeltemp').hide();
+
+      var inputDevelopperOrNot = el.find('input');
+      inputDevelopperOrNot.each(function (){
+        $(this).on('change', function (){
+
+          if($(this).val() === '1') {
+            $('.accordion-modeltemp').hide();
+            $('.accordion-developper').show();
+          } else if ($(this).val() === '0') {
+            $('.accordion-developper').hide();
+            $('.accordion-modeltemp').show();
+          } else {
+            console.log('default');
+          }
+
+        });
+      });
+    });
+  </script>
+{/literal}
