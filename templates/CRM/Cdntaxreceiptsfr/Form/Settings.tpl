@@ -216,9 +216,18 @@
     CRM.$(function($){
 
       const el = $('.wrapper-template-pdf');
+      const elDataAttributesSetting = el.attr('data-attributes');
 
-      $('.accordion-developper').hide();
-      $('.accordion-modeltemp').hide();
+      console.log(elDataAttributesSetting);
+
+      if(elDataAttributesSetting === '0') {
+        $('.accordion-developper').hide();
+      } else if(elDataAttributesSetting === '1') {
+        $('.accordion-modeltemp').hide();
+      } else {
+        $('.accordion-modeltemp').show();
+        $('.accordion-developper').show();
+      }
 
       var inputDevelopperOrNot = el.find('input');
       inputDevelopperOrNot.each(function (){
