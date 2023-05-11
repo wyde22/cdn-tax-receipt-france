@@ -224,89 +224,69 @@ function cdntaxreceiptsfr_generateFormattedReceipt($receipt, &$collectedPdf = NU
     $context = ['contactId' => $receipt['contact_id'], 'contributionId' => $contributionId];
     $pdf_file = $config->uploadDir . 'Receipt-' . $receipt['receipt_no'] . '.pdf';
     $user_friendly = 'Receipt-' . $receipt['receipt_no'] . '.pdf';
-
-  /*if (!defined('PDF_PAGE_FORMAT')) {
-    define('PDF_PAGE_FORMAT', 'USLETTER'); // orig: 'A4'
-  }*/
-  
-//  $params = [
-//    'contactId' => $receipt['contact_id'],
-//    'messageTemplateID' => 145,
-//  ];
-//  $renderTemplate = CRM_Core_BAO_MessageTemplate::renderTemplate($params);
-//
-//  $pdf_file = $renderTemplate['html'];
     
-//    $contributionId = CRM_Utils_Request::retrieveValue('id', 'Positive');
-//
-//    $context = ['contactId' => $receipt['contact_id'], 'contributionId' => $contributionId];
-//
-    $path = CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux::downloadOutputPDF(145,$context,$user_friendly);
-  
-  //$pdf = new PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
-  //$pdf->Open();
-  
-  /*  $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-    $pdf->SetFont('dejavusans', '', 10);
-  $pdf->AddPage();
-  $pdf->SetFont(Arial,'',10);
-    $pdf->setJPEGQuality('100');
+    if(Civi::settings()->get('developper_or_not') == 0 ) {
+        $path = CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux::downloadOutputPDF(145,$context,$user_friendly);
+    } else {
+        if (!defined('PDF_PAGE_FORMAT')) {
+            define('PDF_PAGE_FORMAT', 'USLETTER'); // orig: 'A4'
+        }
+        $pdf = new PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, 'LETTER', TRUE, 'UTF-8', FALSE);
+        $pdf->Open();
     
-    $pdf->SetAutoPageBreak('', $margin=0);
-    $pdf->writeHTML($html[0], true, false, true, false, '');*/
+        $pdf->SetAuthor(Civi::settings()->get('org_name'));
     
+        $mymargin_left = 12;
+        $mymargin_top = 6;
+        $mymargin_right = 12;
+        $pdf->SetMargins($mymargin_left, $mymargin_top, $mymargin_right);
     
-  /*$pdf->SetAuthor(Civi::settings()->get('org_name'));
-
-  $mymargin_left = 12;
-  $mymargin_top = 6;
-  $mymargin_right = 12;
-  $pdf->SetMargins($mymargin_left, $mymargin_top, $mymargin_right);
-
-  $pdf->setJPEGQuality('100');
-
-  $pdf->SetAutoPageBreak('', $margin=0);
-
-  $pdf_variables = array(
-    "mode" => $mode,
-    "mymargin_left" => $mymargin_left,
-    "mymargin_top" => $mymargin_top,
-    "is_duplicate" => $receipt['is_duplicate'],
-    "pdf_img_files_path" => $pdf_img_files_path,
-    "line_1" => $line_1,
-    "source_funds" => isset($receipt['source']) ? $receipt['source'] : '',
-    "amount" => $receipt['receipt_amount'],
-    "display_date" => $display_date,
-    "display_year" => $display_year,
-    "issued_on" => date('Y-m-d', $receipt['issued_on']),
-    "issue_type" => $receipt['issue_type'],
-    "receipt_number" => $receipt['receipt_no'],
-    "displayname" => $displayname,
-    "address_line_1" => $address_line_1,
-    "address_line_1b" => $address_line_1b,
-    "address_line_2" => $address_line_2,
-    "address_line_3" => $address_line_3,
-    "inkind_values" => isset($receipt['inkind_values']) ? $receipt['inkind_values'] : array(),
-    "receipt_contributions" => $receipt['contributions'],
-    "receipt_status" => $receipt['receipt_status'],
-    "advantage_description" => $receipt['advantage_description'],
-    "advantage_amount" => $receipt['advantage_amount'],
-    "contribution_amount" => $receipt['contribution_amount'],
-  );
-
-  $output_files = array($pdf);
-  if ( isset($collectedPdf) && ( $receipt['issue_method'] == 'print' || $mode == CDNTAXRECEIPTS_MODE_PREVIEW) ) {
-    $output_files[] = $collectedPdf;
-  }
-
-  foreach ( $output_files as $f ) {
-    $f->AddPage();
-    _cdntaxreceipts_writePage($f, $pdf_variables, $receipt);
-  }*/
-
-  // close and output the single receipt, but not the collected receipts...
-  //$pdf->Close();
-  //$pdf->Output($path, 'F');
+        $pdf->setJPEGQuality('100');
+    
+        $pdf->SetAutoPageBreak('', $margin=0);
+    
+        $pdf_variables = array(
+          "mode" => $mode,
+          "mymargin_left" => $mymargin_left,
+          "mymargin_top" => $mymargin_top,
+          "is_duplicate" => $receipt['is_duplicate'],
+          "pdf_img_files_path" => $pdf_img_files_path,
+          "line_1" => $line_1,
+          "source_funds" => isset($receipt['source']) ? $receipt['source'] : '',
+          "amount" => $receipt['receipt_amount'],
+          "display_date" => $display_date,
+          "display_year" => $display_year,
+          "issued_on" => date('Y-m-d', $receipt['issued_on']),
+          "issue_type" => $receipt['issue_type'],
+          "receipt_number" => $receipt['receipt_no'],
+          "displayname" => $displayname,
+          "address_line_1" => $address_line_1,
+          "address_line_1b" => $address_line_1b,
+          "address_line_2" => $address_line_2,
+          "address_line_3" => $address_line_3,
+          "inkind_values" => isset($receipt['inkind_values']) ? $receipt['inkind_values'] : array(),
+          "receipt_contributions" => $receipt['contributions'],
+          "receipt_status" => $receipt['receipt_status'],
+          "advantage_description" => $receipt['advantage_description'],
+          "advantage_amount" => $receipt['advantage_amount'],
+          "contribution_amount" => $receipt['contribution_amount'],
+        );
+    
+        $output_files = array($pdf);
+        if ( isset($collectedPdf) && ( $receipt['issue_method'] == 'print' || $mode == CDNTAXRECEIPTS_FR_MODE_PREVIEW) ) {
+            $output_files[] = $collectedPdf;
+        }
+    
+        foreach ( $output_files as $f ) {
+            $f->AddPage();
+            _cdntaxreceiptsfr_writePage($f, $pdf_variables, $receipt);
+        }
+    
+        // close and output the single receipt, but not the collected receipts...
+        $pdf->Close();
+        $pdf->Output($pdf_file, 'F');
+        $path = $pdf_file;
+    }
   
   return array($path, $user_friendly);
 }

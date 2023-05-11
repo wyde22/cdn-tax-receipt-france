@@ -256,30 +256,32 @@ class CRM_Cdntaxreceiptsfr_Form_ViewTaxReceipt extends CRM_Core_Form {
 
     if ( $filename && file_exists($filename) ) {
     
-        $context = ['contactId' => $contactId, 'contributionId' => $contributionId];
+        if(Civi::settings()->get('developper_or_not') == 0 ) {
+            $context = ['contactId' => $contactId, 'contributionId' => $contributionId];
+            CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux::downloadPDF($messageTemplateId,$context,$filename);
+        } else {
+            // set up headers and stream the file
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename='.basename($filename));
+            header('Content-Transfer-Encoding: binary');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($filename));
+            ob_clean();
+            flush();
+            readfile($filename);
     
-        CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux::downloadPDF($messageTemplateId,$context,$filename);
+            // clean up -- not cleaning up session and file because IE may reload the page
+            // after displaying a security warning for the download. otherwise I would want
+            // to delete the file once it has been downloaded.  hook_cron() cleans up after us
+            // for now.
+    
+            // $session->set('pdf_file', NULL, 'cdntaxreceipts');
+            // unlink($filename);
+        }
         
-      // set up headers and stream the file
-      /*header('Content-Description: File Transfer');
-      header('Content-Type: application/octet-stream');
-      header('Content-Disposition: attachment; filename='.basename($filename));
-      header('Content-Transfer-Encoding: binary');
-      header('Expires: 0');
-      header('Cache-Control: must-revalidate');
-      header('Pragma: public');
-      header('Content-Length: ' . filesize($filename));
-      ob_clean();
-      flush();
-      readfile($filename);*/
-
-      // clean up -- not cleaning up session and file because IE may reload the page
-      // after displaying a security warning for the download. otherwise I would want
-      // to delete the file once it has been downloaded.  hook_cron() cleans up after us
-      // for now.
-
-      //$session->set('pdf_file', NULL, 'cdntaxreceipts');
-      //unlink($filename);
       CRM_Utils_System::civiExit();
     }
     else {
