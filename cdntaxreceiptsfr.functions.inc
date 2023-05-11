@@ -226,7 +226,12 @@ function cdntaxreceiptsfr_generateFormattedReceipt($receipt, &$collectedPdf = NU
     $user_friendly = 'Receipt-' . $receipt['receipt_no'] . '.pdf';
     
     if(Civi::settings()->get('developper_or_not') == 0 ) {
-        $path = CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux::downloadOutputPDF(145,$context,$user_friendly);
+        $messageTemplateId = Civi::settings()->get('modeltemp');
+        if($messageTemplateId == 0 || empty($messageTemplateId)) {
+            $statusMsg = ts('Sorry, you must choose a model of template in settings page of module');
+            CRM_Core_Session::setStatus( $statusMsg, '', 'error' );
+        }
+        $path = CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux::downloadOutputPDF($messageTemplateId,$context,$user_friendly);
     } else {
         if (!defined('PDF_PAGE_FORMAT')) {
             define('PDF_PAGE_FORMAT', 'USLETTER'); // orig: 'A4'
