@@ -1,130 +1,66 @@
-CDNTaxReceipts
+CDN Tax Receipts France
 ==============
 
-Canadian Tax Receipts extension for CiviCRM
+Module CiviCRM pour la gestion des reçus fiscaux pour les organisations françaises. Ce module a été créé via un fork du repository CDNTaxReceipts. Extension développée par KarinG, DaveD, samulesov : https://lab.civicrm.org/extensions/cdntaxreceipts
 
-Upgrading from previous versions:
-------------
-NOTE: If upgrading site that uses existing Drupal CiviCRM CDN Tax Receipts module: https://drupal.org/sandbox/semperit/1289724 - you need to:
-
-1. Take note of your CiviCRM CDN Tax Receipt settings [on your Drupal side under: admin/config/civicrm_cdntaxreceipts/settings]
-2. Backup up both tax log tables: civicrm_cdntaxreceipts_log and civicrm_cdntaxreceipts_log_contributions
-3. Disable the CiviCRM CDN Tax Receipts module on the admin/modules page
-4. Remove the tcpdf/ from your /libraries
-5. For more detail see UPGRADE.txt
-
-To set up the extension:
+Installation de l'extension :
 ------------
 
-1. Make sure your CiviCRM Extensions directory is set (Administer > System Settings > Directories).
-2. Make sure your CiviCRM Extensions Resource URL is set (Administer > System Settings > Resource URLs).
-3. Unpack the code
-    - cd extensions directory
-    - git clone https://lab.civicrm.org/extensions/cdntaxreceipts.git org.civicrm.cdntaxreceipts
-4. Enable the extension at Administer > System Settings > Manage Extensions
-5. Configure CDN Tax Receipts at Administer > CiviContribute > CDN Tax Receipts. (Take note of the dimensions for each of the image parameters. Correct sizing is important. You might need to try a few times to get it right.)
-6. Review permissions: The extension has added a new permission called "CiviCRM CDN Tax Receipts: Issue Tax Receipts".
+1. Assurez-vous que votre répertoire d'extensions CiviCRM est défini (Administrer > Paramètres système > Répertoires).
+2. Assurez-vous que votre URL de ressource d'extensions CiviCRM est définie (Administrer > Paramètres système > URL de ressource).
+3. Décompressez le code
+    - répertoire d'extensions cd
+    - clone git git@github.com:wyde22/cdn-tax-receipt-france.git
+4. Activez l'extension dans Administrer > Paramètres système > Gérer les extensions
+5. Configurez les reçus fiscaux CDN dans Administrer > CiviContribute > Reçus fiscaux CDN.
+6. Autorisations de révision : l'extension a ajouté une nouvelle autorisation appelée "Reçus fiscaux CDN CiviCRM : émettre des reçus fiscaux".
 
-Note: if you are installing this on Drupal 8 or Drupal 9 -> remember clear the Drupal cache or you may not be able to get to the CiviCRM CDNTaxReceipts settings screen.
+Remarque : si vous l'installez sur Drupal 8 ou Drupal 9 -> n'oubliez pas de vider le cache Drupal ou vous ne pourrez peut-être pas accéder à l'écran des paramètres CiviCRM CDNTaxReceipts.
 
-Now you should be able to use the module.
+Vous devriez maintenant pouvoir utiliser le module.
 
-**Note: Compatibility issue with open_basedir**
+**Remarque : problème de compatibilité avec open_basedir**
 
-This extension uses the TCPDF library from CiviCRM. If your server has open_basedir set initializing the library
-causes a warning. To avoid this please add the following to your civicrm.settings.php anywhere after $civicrm_root
-is defined:
+Cette extension utilise la bibliothèque TCPDF de CiviCRM. Si votre serveur a défini open_basedir initialiser la bibliothèque
+provoque un avertissement. Pour éviter cela, veuillez ajouter ce qui suit à votre civicrm.settings.php n'importe où après $civicrm_root
+est défini:
 
     /**
-     * Early define for tcpdf constants to avoid warnings with open_basedir.
+     * Définition précoce des constantes tcpdf pour éviter les avertissements avec open_basedir.
      */
-    if (!defined('K_PATH_MAIN')) {
-      define('K_PATH_MAIN', $civicrm_root . '/packages/tcpdf/');
+    si (!defined('K_PATH_MAIN')) {
+      définir('K_PATH_MAIN', $civicrm_root . '/packages/tcpdf/');
     }
 
-    if (!defined('K_PATH_IMAGES')) {
-      define('K_PATH_IMAGES', K_PATH_MAIN . 'images');
+    si (!defined('K_PATH_IMAGES')) {
+      définir('K_PATH_IMAGES', K_PATH_MAIN . 'images');
     }
 
 
-Operations
-------------
-**Individual or Single Tax Receipts**
-
-These are receipts issued as one receipt to one contribution.
-- To issue an individual receipt, pull up the contact record, go to 'contributions' tab, view the contribution, and click the "Tax Receipt" button. Follow on-screen instructions from there.
-Single receipts can be issued in bulk for multiple contributions. This process issues one receipt per contribution.
-- To issue bulk-issue receipts, go to Contributions > Find Contributions, run a search, select one or more search results, and select "Issue Tax Receipts" in the actions drop-down. Follow on-screen instructions from there.
-
-**Annual Tax Receipts**
-
-These are receipts that collect all outstanding contributions for the year into one receipt. If some contributions have already been sent a receipt they will not be included in the total.
-Since there are multiple contributions on one receipt there are some differences in the template. In-kind fields are not shown, contribution type and source are also not shown since the collected contributions over the year could be of multiple types and from multiple sources.
-
-- To issue Annual Tax Receipts, go to Search > Find Contacts (or Search > Advanced Search), run a search for contacts, select one or more contacts, and select "Issue Annual Tax Receipts" in the actions drop-down. Follow on-screen instructions from there.
-
-**Reports**
-
-The extension also enables two CiviReport templates, found under `Reports - Contribution Reports - New Contribution Report`, which can be used to see a list of receipts issued and receipts outstanding.
-
-- Tax Receipts - Receipts Issued
-- Tax Receipts - Receipts Not Issued
-
-**Testing Tax Receipts**
-
-- To test your template settings and view a receipt without e-mailing the contact or making a database record, follow the directions for bulk-issueing of receipts: go to Contributions > Find Contributions, run a search, select a search result, and select "Issue Tax Receipts" in the actions drop-down. On the next screen, make sure to select 'Run in preview mode?', and follow on-screen instructions for other options, a pdf will be generated.
-
-**Tracking Email openings**
-
-- Earlier versions of this Extension required a permission -> "CiviCRM CDN Tax Receipts: Open Tracking". That's no longer required - but make sure that $openTracking parameter is in the message template!
-
-hook_cdntaxreceipts_eligible()
+Opérations
 ------------
 
-You may be in a situation where certain Contributions are eligible for tax receipts and others are not (e.g. donations are receiptable, but only for individuals, and event fees are not receiptable). If this is the case, there is a PHP hook hook_cdntaxreceipts_eligible($contribution) that can be used for complex eligibility criteria. Hook implementations should return one of TRUE or FALSE, wrapped in an array.
+**Reçus fiscaux individuels ou uniques**
+Il s'agit de reçus délivrés comme un reçu pour une contribution.
 
-    // Example hook implementation:
-    //  Contributions have a custom yes/no field called "receiptable". Issue tax receipt
-    //  on any contribution where receiptable = Yes.
-    function mymodule_cdntaxreceipts_eligible( $contribution ) {
+Pour émettre un reçu individuel, ouvrez l'enregistrement du contact, accédez à l'onglet "contributions", affichez la contribution et cliquez sur le bouton "Reçu fiscal". Suivez les instructions à l'écran à partir de là.
+Des reçus uniques peuvent être émis en bloc pour plusieurs contributions. Ce processus délivre un reçu par contribution.
+Pour émettre des reçus en masse, accédez à Contributions > Rechercher des contributions, lancez une recherche, sélectionnez un ou plusieurs résultats de recherche, puis sélectionnez « Émettre des reçus fiscaux » dans le menu déroulant des actions. Suivez les instructions à l'écran à partir de là.
 
-      // load custom field
-      $query = "
-      SELECT receiptable_119
-      FROM civicrm_value_tax_receipt_23
-      WHERE entity_id = %1";
+**Test des reçus fiscaux**
 
-      $params = array(1 => array($contribution->id, 'Integer'));
-      $field = CRM_Core_DAO::singleValueQuery($query, $params);
+- Pour tester les paramètres de votre modèle et afficher un reçu sans envoyer d'e-mail au contact ni créer d'enregistrement dans la base de données, suivez les instructions pour l'émission groupée de reçus : accédez à Contributions > Rechercher des contributions, lancez une recherche, sélectionnez un résultat de recherche, puis sélectionnez "Émettre des reçus fiscaux" dans le menu déroulant des actions. Sur l'écran suivant, assurez-vous de sélectionner "Exécuter en mode aperçu ?", et suivez les instructions à l'écran pour les autres options, un pdf sera généré.
 
-      if ( $field == 1 ) {
-        return array(TRUE);
-      }
-      else {
-        return array(FALSE);
-      }
+**Suivi des ouvertures par e-mail**
 
-    }
+- Les versions antérieures de cette extension nécessitaient une autorisation -> "Reçus fiscaux CDN CiviCRM : suivi ouvert". Ce n'est plus nécessaire - mais assurez-vous que le paramètre $openTracking est dans le modèle de message !
 
-By default, a contribution is eligible for tax receipting if it is completed, and if its Financial Type is deductible.
-
-hook_cdntaxreceipts_eligibleAmount()
+hook
 ------------
 
-If you need to customize the amount that is tax-deductible on a receipt, use this hook.
+Cette extension embarque tous les hooks du fork. Cependant, un arbitrage sera effectué pour conserver, modifier ou supprimer certains hooks.
 
-    // Example hook implementation:
-    //  Return a maximum tax deduction of $1000.00
-    function mymodule_cdntaxreceipts_eligibleAmount( $contribution ) {
-      if ($contribution->total_amount - $contribution->non_deductible_amount > 1000) {
-        return array(1000.00);
-      }
-      else {
-        return $contribution->total_amount - $contribution->non_deductible_amount;
-      }
-    }
-
-Disclaimer
+Clause de non-responsabilité
 ------------
 
-This extension has been developed in consultation with a number of non-profits and with the help of a senior accountant. The maintainers have made every reasonable effort to ensure compliance with CRA guidelines and best practices. However, it is the reponsibility of each organization using this extension to do their own due diligence in ensuring compliance with CRA guidelines and with their organizational policies.
+Cette extension a été développée en consultation avec un certain nombre d'organisations à but non lucratif et avec l'aide d'un consultant senior.

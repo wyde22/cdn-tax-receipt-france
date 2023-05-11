@@ -19,7 +19,7 @@ class ReceiptsIssuedReportTest extends CdntaxreceiptsBase {
     }
     $this->createUserAndLogIn();
     $this->contact = $this->createContact();
-    $this->setDeliveryMethod(CDNTAX_DELIVERY_PRINT_ONLY);
+    $this->setDeliveryMethod(CDNTAX_FR_DELIVERY_PRINT_ONLY);
   }
 
   /**

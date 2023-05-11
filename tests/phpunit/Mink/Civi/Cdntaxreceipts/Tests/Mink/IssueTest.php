@@ -57,7 +57,7 @@ class IssueTest extends CdntaxreceiptsBase {
    * We don't verify the PDF here.
    */
   public function testIssueTaxReceiptPrint() {
-    $this->setDeliveryMethod(CDNTAX_DELIVERY_PRINT_ONLY);
+    $this->setDeliveryMethod(CDNTAX_FR_DELIVERY_PRINT_ONLY);
     $this->testIssueTaxReceipt();
     $this->assertSession()->pageTextContains('Please download and print the receipt that is generated. You will need to send a printed copy to the contributor.');
   }
@@ -67,7 +67,7 @@ class IssueTest extends CdntaxreceiptsBase {
    * We don't verify the PDF here.
    */
   public function testIssueTaxReceiptEmail() {
-    $this->setDeliveryMethod(CDNTAX_DELIVERY_PRINT_EMAIL);
+    $this->setDeliveryMethod(CDNTAX_FR_DELIVERY_PRINT_EMAIL);
     $this->testIssueTaxReceipt();
     $this->assertSession()->pageTextContains('The receipt will be sent by email to the contributor (anthony.anderson@example.org).');
     $this->assertSession()->pageTextContains('Tax Receipt has been emailed to the contributor.');
@@ -78,7 +78,7 @@ class IssueTest extends CdntaxreceiptsBase {
    * We don't verify the PDF here.
    */
   public function testIssueTaxReceiptPrintOverride() {
-    $this->setDeliveryMethod(CDNTAX_DELIVERY_PRINT_EMAIL);
+    $this->setDeliveryMethod(CDNTAX_FR_DELIVERY_PRINT_EMAIL);
     $this->testIssueTaxReceipt(TRUE);
     $this->assertNotNull($this->getSession()->getPage()->find('css', '.crm-info-panel tbody tr td:contains("Print")'));
   }

@@ -10,7 +10,7 @@ class CRM_Cdntaxreceipts_ReceiptsIssuedReportTest extends CRM_Cdntaxreceipts_Bas
     if (!\CRM_Core_BAO_Domain::isDBVersionAtLeast('5.43.alpha1')) {
       $this->markTestIncomplete('Test requires E_NOTICE fix that is only in 5.43+');
     }
-    $this->setDeliveryMethod(CDNTAX_DELIVERY_PRINT_ONLY);
+    $this->setDeliveryMethod(CDNTAX_FR_DELIVERY_PRINT_ONLY);
   }
 
   public function tearDown(): void {
@@ -40,12 +40,12 @@ class CRM_Cdntaxreceipts_ReceiptsIssuedReportTest extends CRM_Cdntaxreceipts_Bas
     $contribution->id = $contribution_id;
     $contribution->find(TRUE);
     // issue receipt
-    list($result, $method) = cdntaxreceipts_issueTaxReceipt($contribution);
+    [$result, $method] = cdntaxreceiptsfr_issueTaxReceipt($contribution);
     $this->assertTrue($result);
     $this->assertEquals('print', $method);
 
     // run report
-    $data = civicrm_api3('report_template', 'getrows', ['report_id' => 'cdntaxreceipts/receiptsissued'])['values'];
+    $data = civicrm_api3('report_template', 'getrows', ['report_id' => 'cdntaxreceiptsfr/receiptsissued'])['values'];
 
     // We don't care about this and it was introduced in 5.45 so causes fails
     // on earlier matrices.
@@ -59,15 +59,15 @@ class CRM_Cdntaxreceipts_ReceiptsIssuedReportTest extends CRM_Cdntaxreceipts_Bas
       [
         'civicrm_contact_sort_name' => 'Miller, Joe',
         'civicrm_contact_id' => $contact_id,
-        'civicrm_cdntaxreceipts_log_issued_on' => $datestr,
-        'civicrm_cdntaxreceipts_log_receipt_amount' => '10.00',
-        'civicrm_cdntaxreceipts_log_receipt_no' => 'C-00000001',
-        'civicrm_cdntaxreceipts_log_issue_type' => 'Single',
-        'civicrm_cdntaxreceipts_log_issue_method' => 'Print',
-        'civicrm_cdntaxreceipts_log_uid' => 1,
-        'civicrm_cdntaxreceipts_log_receipt_status' => 'Issued',
-        'civicrm_cdntaxreceipts_log_email_opened' => NULL,
-        'civicrm_cdntaxreceipts_log_contributions_contribution_id' => 1,
+        'civicrm_cdntaxreceiptsfr_log_issued_on' => $datestr,
+        'civicrm_cdntaxreceiptsfr_log_receipt_amount' => '10.00',
+        'civicrm_cdntaxreceiptsfr_log_receipt_no' => 'C-00000001',
+        'civicrm_cdntaxreceiptsfr_log_issue_type' => 'Single',
+        'civicrm_cdntaxreceiptsfr_log_issue_method' => 'Print',
+        'civicrm_cdntaxreceiptsfr_log_uid' => 1,
+        'civicrm_cdntaxreceiptsfr_log_receipt_status' => 'Issued',
+        'civicrm_cdntaxreceiptsfr_log_email_opened' => NULL,
+        'civicrm_cdntaxreceiptsfr_log_contributions_contribution_id' => 1,
         'civicrm_contact_sort_name_link' => '/index.php?q=civicrm/contact/view&amp;reset=1&amp;cid=' . $contact_id,
         'civicrm_contact_sort_name_hover' => 'View Contact Summary for this Contact',
       ]
@@ -93,11 +93,11 @@ class CRM_Cdntaxreceipts_ReceiptsIssuedReportTest extends CRM_Cdntaxreceipts_Bas
     $contribution->id = $contribution_id;
     $contribution->find(TRUE);
     // issue receipt
-    list($result, $method) = cdntaxreceipts_issueTaxReceipt($contribution);
+    [$result, $method] = cdntaxreceiptsfr_issueTaxReceipt($contribution);
 
     // run report
     $data = civicrm_api3('report_template', 'getrows', [
-      'report_id' => 'cdntaxreceipts/receiptsissued',
+      'report_id' => 'cdntaxreceiptsfr/receiptsissued',
       'fields' => [
         'sort_name' => 1,
         'issued_on' => 1,
@@ -122,15 +122,15 @@ class CRM_Cdntaxreceipts_ReceiptsIssuedReportTest extends CRM_Cdntaxreceipts_Bas
       [
         'civicrm_contact_sort_name' => 'Miller, Joe',
         'civicrm_contact_id' => $contact_id,
-        'civicrm_cdntaxreceipts_log_issued_on' => $datestr,
-        'civicrm_cdntaxreceipts_log_receipt_amount' => '10.00',
-        'civicrm_cdntaxreceipts_log_receipt_no' => 'C-00000001',
-        'civicrm_cdntaxreceipts_log_issue_type' => 'Single',
-        'civicrm_cdntaxreceipts_log_issue_method' => 'Print',
-        'civicrm_cdntaxreceipts_log_uid' => 1,
-        'civicrm_cdntaxreceipts_log_receipt_status' => 'Issued',
-        'civicrm_cdntaxreceipts_log_email_opened' => NULL,
-        'civicrm_cdntaxreceipts_log_contributions_contribution_id' => 1,
+        'civicrm_cdntaxreceiptsfr_log_issued_on' => $datestr,
+        'civicrm_cdntaxreceiptsfr_log_receipt_amount' => '10.00',
+        'civicrm_cdntaxreceiptsfr_log_receipt_no' => 'C-00000001',
+        'civicrm_cdntaxreceiptsfr_log_issue_type' => 'Single',
+        'civicrm_cdntaxreceiptsfr_log_issue_method' => 'Print',
+        'civicrm_cdntaxreceiptsfr_log_uid' => 1,
+        'civicrm_cdntaxreceiptsfr_log_receipt_status' => 'Issued',
+        'civicrm_cdntaxreceiptsfr_log_email_opened' => NULL,
+        'civicrm_cdntaxreceiptsfr_log_contributions_contribution_id' => 1,
         'civicrm_line_item_financial_type_id' => 'Donation',
         'civicrm_contribution_payment_instrument_id' => 'Check',
         'civicrm_contact_sort_name_link' => '/index.php?q=civicrm/contact/view&amp;reset=1&amp;cid=' . $contact_id,

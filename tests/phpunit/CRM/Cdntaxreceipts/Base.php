@@ -11,7 +11,7 @@ class CRM_Cdntaxreceipts_Base extends \CiviUnitTestCase {
     // Also it only seems to work once and then does nothing the next time, so
     // use api directly.
     // \Civi\Test::headless()->installMe(__DIR__)->apply();
-    $this->callAPISuccess('Extension', 'install', ['keys' => 'org.civicrm.cdntaxreceipts']);
+    $this->callAPISuccess('Extension', 'install', ['keys' => 'org.civicrm.cdntaxreceiptsfr']);
     \Civi::settings()->add([
       'org_name' => 'CDN Tax Org',
       'org_address_line1' => '123 Main St.',
@@ -25,7 +25,7 @@ class CRM_Cdntaxreceipts_Base extends \CiviUnitTestCase {
       'receipt_serial' => 0,
       'receipt_authorized_signature_text' => 'Receet Sighnor',
       'issue_inkind' => 0,
-      'delivery_method' => CDNTAX_DELIVERY_DATA_ONLY,
+      'delivery_method' => CDNTAX_FR_DELIVERY_DATA_ONLY,
       'attach_to_workflows' => 0,
       'enable_advanced_eligibility_report' => 0,
       'email_from' => 'cdntaxorg@example.org',
@@ -36,8 +36,8 @@ class CRM_Cdntaxreceipts_Base extends \CiviUnitTestCase {
   public function tearDown(): void {
     // The uninstallMe function doesn't seem to do anything?
     //\Civi\Test::headless()->uninstallMe(__DIR__)->apply();
-    $this->callAPISuccess('Extension', 'disable', ['keys' => 'org.civicrm.cdntaxreceipts']);
-    $this->callAPISuccess('Extension', 'uninstall', ['keys' => 'org.civicrm.cdntaxreceipts']);
+    $this->callAPISuccess('Extension', 'disable', ['keys' => 'org.civicrm.cdntaxreceiptsfr']);
+    $this->callAPISuccess('Extension', 'uninstall', ['keys' => 'org.civicrm.cdntaxreceiptsfr']);
     parent::tearDown();
   }
 

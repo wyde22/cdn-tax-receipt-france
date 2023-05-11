@@ -3,7 +3,7 @@
 <table>
   <base>CRM/Cdntaxreceipts</base>
   <class>CdnAdvantage</class>
-  <name>cdntaxreceipts_advantage</name>
+  <name>cdntaxreceiptsfr_advantage</name>
   <comment>Holds description for advantage for each contribution</comment>
   <add>5.23</add>
   <log>true</log>

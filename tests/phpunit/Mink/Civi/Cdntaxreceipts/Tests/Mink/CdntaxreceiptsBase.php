@@ -26,7 +26,7 @@ class CdntaxreceiptsBase extends CiviCrmTestBase {
   public function setUp(): void {
     parent::setUp();
 
-    $this->setUpExtension('org.civicrm.cdntaxreceipts');
+    $this->setUpExtension('org.civicrm.cdntaxreceiptsfr');
 
     $this->configureTaxReceiptSettings();
 
@@ -81,7 +81,7 @@ class CdntaxreceiptsBase extends CiviCrmTestBase {
       'receipt_serial' => 0,
       'receipt_authorized_signature_text' => 'Receet Sighnor',
       'issue_inkind' => 0,
-      'delivery_method' => CDNTAX_DELIVERY_DATA_ONLY,
+      'delivery_method' => CDNTAX_FR_DELIVERY_DATA_ONLY,
       'attach_to_workflows' => 0,
       'enable_advanced_eligibility_report' => 0,
       'email_from' => 'cdntaxorg@example.org',
@@ -159,7 +159,7 @@ class CdntaxreceiptsBase extends CiviCrmTestBase {
     // Replace windows backslashes.
     $pdf_file = str_replace('\\', '/', \CRM_Core_Config::singleton()->uploadDir . $expectedFileName);
     $this->assertTrue(file_exists($pdf_file), "$pdf_file does not exist");
-    $new_name = str_replace('\\', '/', $this->getBrowserOutputDirectory()) . 'Receipts-To-Print-' . \CRM_Cdntaxreceipts_Utils_Time::time() . '.pdf';
+    $new_name = str_replace('\\', '/', $this->getBrowserOutputDirectory()) . 'Receipts-To-Print-' . \CRM_Cdntaxreceiptsfr_Utils_Time::time() . '.pdf';
     $this->assertTrue(rename($pdf_file, $new_name), "Can't rename $pdf_file to $new_name");
     $this->fudgePDFFile($new_name);
     $expectedFile = $this->getFixtureFileFor($class, $func);
@@ -175,8 +175,8 @@ class CdntaxreceiptsBase extends CiviCrmTestBase {
     $s = file_get_contents($filename);
     // The +10 is because for some reason that's the timezone that ends up
     // in our fixture file.
-    $s = preg_replace('/\d{14}\+\d\d/', date('YmdHis', \CRM_Cdntaxreceipts_Utils_Time::time()) . '+10', $s);
-    $s = preg_replace('/\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\+\d\d/', date('Y-m-d\TH:i:s', \CRM_Cdntaxreceipts_Utils_Time::time()) . '+10', $s);
+    $s = preg_replace('/\d{14}\+\d\d/', date('YmdHis', \CRM_Cdntaxreceiptsfr_Utils_Time::time()) . '+10', $s);
+    $s = preg_replace('/\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\+\d\d/', date('Y-m-d\TH:i:s', \CRM_Cdntaxreceiptsfr_Utils_Time::time()) . '+10', $s);
     $s = preg_replace('/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/', '9e7bde6b-2ad3-c6ba-6656-86ba3cf7b7a2', $s);
     $s = preg_replace('/<[a-f0-9]{32}>/', '<9e7bde6b2ad3c6ba665686ba3cf7b7a2>', $s);
     $this->assertGreaterThan(0, file_put_contents($filename, $s));

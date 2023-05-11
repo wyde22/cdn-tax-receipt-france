@@ -21,9 +21,9 @@ class CustomTemplateTest extends CdntaxreceiptsBase {
   public function testCustomTemplate() {
     // set up mock time
     $mock_time = '2021-02-03 10:11:12';
-    \CRM_Cdntaxreceipts_Utils_Time::setTime($mock_time);
+    \CRM_Cdntaxreceiptsfr_Utils_Time::setTime($mock_time);
 
-    $this->setDeliveryMethod(CDNTAX_DELIVERY_PRINT_ONLY);
+    $this->setDeliveryMethod(CDNTAX_FR_DELIVERY_PRINT_ONLY);
 
     // copy our template to the 'custom' dir
     $this->assertTrue(copy(
@@ -56,7 +56,7 @@ class CustomTemplateTest extends CdntaxreceiptsBase {
 
     $this->assertExpectedPDF(__CLASS__, __FUNCTION__, 'Receipt-C-00000001.pdf');
 
-    \CRM_Cdntaxreceipts_Utils_Time::reset();
+    \CRM_Cdntaxreceiptsfr_Utils_Time::reset();
 
     $this->htmlOutput();
   }

@@ -1,31 +1,30 @@
 <?xml version="1.0"?>
-<extension key="org.civicrm.cdntaxreceipts" type="module">
-  <file>cdntaxreceipts</file>
-  <name>CDN Tax Receipts (ML fork)</name>
+<extension key="org.civicrm.cdntaxreceiptsfr" type="module">
+  <file>cdntaxreceiptsfr</file>
+  <name>CDN Tax Receipts France</name>
   <description>
-      Creates Tax Receipts including single or annual/aggregate tax receipts, with distribution by email or print,
-      detailed reporting, press ready PDF template possible. We worked with (and continue to work with) a BDO Tax Partner
-      who has strong ties to both the NPO community and Tax Authorities (CRA).
+      Extension CiviCRM permettant de gérer les reçus fiscaux pour les associations françaises
   </description>
   <license>AGPL</license>
   <maintainer>
-    <author>KarinG and DaveD</author>
-    <email>frontdesk@semper-it.com</email>
+    <author>Dewy Mercerais</author>
+    <email>dewymercerais@gmail.com</email>
   </maintainer>
   <releaseDate>2022-07-26</releaseDate>
-  <version>1.7.0</version>
+  <version>1.0</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>5.45</ver>
   </compatibility>
   <urls>
-    <url desc="documentation">https://lab.civicrm.org/extensions/cdntaxreceipts/blob/master/README.md</url>
-    <url desc="Support">https://lab.civicrm.org/extensions/cdntaxreceipts/-/issues</url>
+    <url desc="documentation">https://github.com/wyde22/cdn-tax-receipt-france/tree/main</url>
+    <url desc="Support">https://github.com/wyde22/cdn-tax-receipt-france/issues</url>
   </urls>
   <comments>
-    Fork by ML, which merges some elements from the original upstream and also bits from the CanadaHelps fork.
+    Cette extension est un fork de l'extension CDN tax receipts. Ce module est optimisé pour les organisations anglophones.
+    Je me suis fortement inspiré de cette extension et je modifie le module pour quil corresponde aux spécificités des associations françaises
   </comments>
   <civix>
-    <namespace>CRM/Cdntaxreceipts</namespace>
+    <namespace>CRM/CdntaxreceiptsFr</namespace>
   </civix>
 </extension>
