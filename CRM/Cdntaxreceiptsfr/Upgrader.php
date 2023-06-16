@@ -191,6 +191,11 @@ AND COLUMN_NAME = 'receipt_status'");
     return TRUE;
   }
 
+  public function upgrade_1413() {
+    $this->_setSourceDefaults();
+    return TRUE;
+  }
+
   public function upgrade_1510() {
     $this->ctx->log->info('Applying update 1510: Adding gift advantage description table');
     $sql = "CREATE TABLE IF NOT EXISTS cdntaxreceiptsfr_advantage (
@@ -276,11 +281,6 @@ AND COLUMN_NAME = 'receipt_status'");
         civicrm_api3('FinancialAccount', 'delete', ['id' => $query->id]);
       }
     }
-    return TRUE;
-  }
-
-  public function upgrade_1413() {
-    $this->_setSourceDefaults();
     return TRUE;
   }
 
