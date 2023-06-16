@@ -18,12 +18,20 @@ class CRM_Cdntaxreceiptsfr_Upgrader extends CRM_Cdntaxreceiptsfr_Upgrader_Base {
 
     $email_message = '{$contact.email_greeting_display},
 
-Attached please find your official tax receipt for income tax purposes.
+    Attached please find your official tax receipt for income tax purposes.
 
-{$orgName}';
+    {$orgName}';
     $email_subject = 'Your tax receipt FR {$receipt.receipt_no}';
+    
+    $email_message_recufr = '{contact.email_greeting_display},
+
+    Merci pour votre don de {contribution.total_amount}
+
+    A bientôt';
+    $email_subject_recufr = 'Votre tax receipt FR {$receipt.receipt_no}';
 
     $this->_create_message_template($email_message, $email_subject);
+    $this->_create_message_template_recu_fiscaux_fr($email_message_recufr, $email_subject_recufr);
     $this->_setSourceDefaults();
   }
 
@@ -191,11 +199,6 @@ AND COLUMN_NAME = 'receipt_status'");
     return TRUE;
   }
 
-  public function upgrade_1413() {
-    $this->_setSourceDefaults();
-    return TRUE;
-  }
-
   public function upgrade_1510() {
     $this->ctx->log->info('Applying update 1510: Adding gift advantage description table');
     $sql = "CREATE TABLE IF NOT EXISTS cdntaxreceiptsfr_advantage (
@@ -283,6 +286,18 @@ AND COLUMN_NAME = 'receipt_status'");
     }
     return TRUE;
   }
+    
+  public function upgrade_1513() {
+      $this->ctx->log->info('Applying update 1513: Message Templates Reçu fiscal FR');
+      $current_message = Civi::settings()->get('email_message');
+      $current_subject = Civi::settings()->get('email_subject') . ' {$receipt.receipt_no}';
+      return $this->_create_message_template_recu_fiscaux_fr($current_message, $current_subject);
+  }
+
+  public function upgrade_1413() {
+    $this->_setSourceDefaults();
+    return TRUE;
+  }
 
   public function _create_message_template($email_message, $email_subject) {
 
@@ -367,9 +382,26 @@ AND COLUMN_NAME = 'receipt_status'");
       'is_default' => 1,
       'is_reserved' => 0,
     );
+    
     civicrm_api3('MessageTemplate', 'create', $params);
 
     return TRUE;
+  }
+  
+  public function _create_message_template_recu_fiscaux_fr($email_message_recufr, $email_subject_recufr) {
+      $params = array(
+        'msg_title' => 'CDN Tax Receipts FR - Reçu fiscal template',
+        'msg_subject' => $email_subject_recufr,
+        'msg_text' => $email_message_recufr,
+        'msg_html' => $email_message_recufr,
+        'is_default' => 1,
+        'is_active' => 1,
+        'is_reserved' => 0,
+      );
+    
+      civicrm_api3('MessageTemplate', 'create', $params);
+    
+      return TRUE;
   }
 
   private function _setSourceDefaults() {
