@@ -30,7 +30,6 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
     $arr4 = $this->processEmailOptions('defaults');
     $defaults = array_merge($arr1, $arr2, $arr3, $arr4);
     $this->setDefaults($defaults);
-
     $this->addButtons(array(
       array(
         'type' => 'submit',
@@ -86,6 +85,7 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
         'receipt_watermark' => Civi::settings()->get('receipt_watermark'),
         'receipt_pdftemplate' => Civi::settings()->get('receipt_pdftemplate'),
       );
+      
       return $defaults;
     }
     else if ( $mode == 'post' ) {
@@ -147,6 +147,9 @@ class CRM_Cdntaxreceiptsfr_Form_Settings extends CRM_Core_Form {
       $this->addElement('text', 'source_label', ts('Source Field Label (%1)', array(1 => CRM_Core_I18n::getLocale(), 'domain' => DOMAINS_CDNTAX_FR)));
     }
     else if ( $mode == 'defaults' ) {
+        $idModelRecuFiscaux = array_search('CDN Tax Receipts FR - Reçu fiscal template', cdntaxreceiptfr_getModelMessage());
+        Civi::settings()->set('modeltemp',$idModelRecuFiscaux);
+        
       $defaults = array(
         'receipt_prefix' => Civi::settings()->get('receipt_prefix'),
         'receipt_authorized_signature_text' => Civi::settings()->get('receipt_authorized_signature_text'),

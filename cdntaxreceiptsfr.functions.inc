@@ -1331,8 +1331,10 @@ function cdntaxreceiptfr_getModelMessage() {
     $modelMessages = ['-- Choisir le modèle de message pour le PDF --'];
     
     $messageTemplates = \Civi\Api4\MessageTemplate::get(FALSE)
-                         ->addSelect('id', 'msg_title')
-                         ->execute();
+      ->addSelect('id', 'msg_title')
+      ->addWhere('msg_title', '=', 'CDN Tax Receipts FR - Reçu fiscal template')
+      ->execute();
+    
     foreach ($messageTemplates as $messageTemplate) {
         $modelMessages[$messageTemplate['id']] = $messageTemplate['msg_title'];
     }
