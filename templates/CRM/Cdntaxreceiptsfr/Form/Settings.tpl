@@ -66,6 +66,52 @@
     </tbody>
   </table>
 
+  <h3>{ts domain='org.civicrm.cdntaxreceiptsfr'}General settings{/ts}</h3>
+  <div class="crm-block crm-form-block crm-form-title-here-form-block">
+
+    <table class="form-layout">
+      <tbody>
+      <tr>
+        <td class="label">{$form.org_name.label}</td>
+        <td class="content">{$form.org_name.html}
+          <p class="description">{ts domain='org.civicrm.cdntaxreceiptsfr'}My Charitable Organization{/ts}</p></td>
+      </tr>
+      <tr>
+        <td class="label">{$form.org_address_line1.label}</td>
+        <td class="content">{$form.org_address_line1.html}
+          <p class="description">{ts domain='org.civicrm.cdntaxreceiptsfr'}101 Anywhere Drive{/ts}</p></td>
+      </tr>
+      <tr>
+        <td class="label">{$form.org_address_line2.label}</td>
+        <td class="content">{$form.org_address_line2.html}
+          <p class="description">{ts domain='org.civicrm.cdntaxreceiptsfr'}Toronto ON A1B 2C3{/ts}</p></td>
+      </tr>
+      <tr>
+        <td class="label">{$form.org_tel.label}</td>
+        <td class="content">{$form.org_tel.html}
+          <p class="description">(555) 555-5555</p></td>
+      </tr>
+      <tr>
+        <td class="label">{$form.org_fax.label}</td>
+        <td class="content">{$form.org_fax.html}
+          <p class="description">(555) 555-5555</p></td>
+      </tr>
+      <tr>
+        <td class="label">{$form.org_email.label}</td>
+        <td class="content">{$form.org_email.html}
+          <p class="description">info@my.org</p></td>
+      </tr>
+      <tr>
+        <td class="label">{$form.org_web.label}</td>
+        <td class="content">{$form.org_web.html}
+          <p class="description">www.my.org</p></td>
+      </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <h3>{ts domain='org.civicrm.cdntaxreceiptsfr'}How to issue your receipt ?{/ts}</h3>
   <table class="form-layout wrapper-template-pdf" data-attributes="{$form.developper_or_not.value}">
     <tbody>
     <tr>
@@ -108,41 +154,6 @@
 
         <table class="form-layout">
           <tbody>
-          <tr>
-            <td class="label">{$form.org_name.label}</td>
-            <td class="content">{$form.org_name.html}
-              <p class="description">{ts domain='org.civicrm.cdntaxreceiptsfr'}My Charitable Organization{/ts}</p></td>
-          </tr>
-          <tr>
-            <td class="label">{$form.org_address_line1.label}</td>
-            <td class="content">{$form.org_address_line1.html}
-              <p class="description">{ts domain='org.civicrm.cdntaxreceiptsfr'}101 Anywhere Drive{/ts}</p></td>
-          </tr>
-          <tr>
-            <td class="label">{$form.org_address_line2.label}</td>
-            <td class="content">{$form.org_address_line2.html}
-              <p class="description">{ts domain='org.civicrm.cdntaxreceiptsfr'}Toronto ON A1B 2C3{/ts}</p></td>
-          </tr>
-          <tr>
-            <td class="label">{$form.org_tel.label}</td>
-            <td class="content">{$form.org_tel.html}
-              <p class="description">(555) 555-5555</p></td>
-          </tr>
-          <tr>
-            <td class="label">{$form.org_fax.label}</td>
-            <td class="content">{$form.org_fax.html}
-              <p class="description">(555) 555-5555</p></td>
-          </tr>
-          <tr>
-            <td class="label">{$form.org_email.label}</td>
-            <td class="content">{$form.org_email.html}
-              <p class="description">info@my.org</p></td>
-          </tr>
-          <tr>
-            <td class="label">{$form.org_web.label}</td>
-            <td class="content">{$form.org_web.html}
-              <p class="description">www.my.org</p></td>
-          </tr>
           <tr>
             <td class="label">{$form.receipt_authorized_signature_text.label}</td>
             <td class="content">{$form.receipt_authorized_signature_text.html}
