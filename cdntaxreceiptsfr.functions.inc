@@ -834,23 +834,30 @@ function cdntaxreceiptsfr_eligibleForReceipt( $contributionId ) {
     return $cache[$contributionId];
   }
 
-  require_once('CRM/Contribute/DAO/Contribution.php');
+  /*require_once('CRM/Contribute/DAO/Contribution.php');
   $contribution =  new CRM_Contribute_DAO_Contribution();
   $contribution->id = $contributionId;
 
   if ( ! $contribution->find( TRUE ) ) {
     CRM_Core_Error::fatal( "CDNTaxReceipts: Could not retrieve details for this contribution" );
-  }
+  }*/
 
   // 1. check that contribution amount is deductible
-  $deductibleAmount = cdntaxreceiptsfr_eligibleAmount($contributionId);;
+  //$deductibleAmount = cdntaxreceiptsfr_eligibleAmount($contributionId);;
   // 2. we used to check here the financial type -- to see if it is deductible.
   // Since the introduction of split transactions (4.5 is the cleanest starting point, though they existed prior),
   // we no longer check the financial type of the contribution, and check instead the tax eligibility of each
   // line item. This is done in the eligibleAmount() function.
+    
+    $contributionEligible = \Civi\Api4\Contribution::get(FALSE)
+      ->addSelect('*', 'custom.*')
+         ->addWhere('id', '=', $contributionId)
+         ->addChain('financial_type', \Civi\Api4\FinancialType::get(TRUE)
+             ->addWhere('id', '=', '$financial_type_id'), 0)
+         ->execute();
 
   // 3. check if the Contribution Status is Completed ( i.e. = 1 )
-  $contributionStatus = $contribution->contribution_status_id;
+  $contributionStatus = $contributionEligible[0]['contribution_status_id'];
   if ( !isset($contributionStatus) ) {
     CRM_Core_Error::fatal( "CDNTaxReceipts: Could not find status of this Contribution." );
   }
@@ -859,7 +866,7 @@ function cdntaxreceiptsfr_eligibleForReceipt( $contributionId ) {
   //   module implementations should return an array containing a single item,
   //   either TRUE or FALSE. assumes TRUE until we receive a FALSE. one FALSE
   //   disqualifies the contribution for a tax receipt.
-  $results = CRM_Utils_Hook::singleton()->invoke(['contribution'], $contribution, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceipts_eligible');
+  /*$results = CRM_Utils_Hook::singleton()->invoke(['contribution'], $contribution, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceipts_eligible');
   $hookOk = TRUE;
 
   if (is_array($results)) {
@@ -868,14 +875,14 @@ function cdntaxreceiptsfr_eligibleForReceipt( $contributionId ) {
         $hookOk = FALSE;
       }
     }
-  }
+  }*/
 
   // CRM-738: Make receipt accessible for 'refunded' & 'cancelled' Contributions as well
   // Removing the condition $contributionStatus == '1' from below
   // is_dev makes it easier to test online donation receipts on dev sites
   $is_dev = Civi::settings()->get('environment') == 'Development';
 
-  if (($is_dev || $contribution->is_test == 0) && $deductibleAmount > 0 && $hookOk) {
+  if (($is_dev || $contributionEligible[0]['financial_type']['is_deductible'] == TRUE) ) {
     $cache[$contributionId] = TRUE;
   }
   else {
