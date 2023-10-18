@@ -231,7 +231,7 @@ function cdntaxreceiptsfr_generateFormattedReceipt($receipt, &$collectedPdf = NU
             $statusMsg = ts('Sorry, you must choose a model of template in settings page of module');
             CRM_Core_Session::setStatus( $statusMsg, '', 'error' );
         }
-        $path = CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux::downloadOutputPDF($messageTemplateId,$context,$user_friendly);
+        $path = CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux::downloadOutputPDF($receipt['issue_type'],$receipt['contributions'],$messageTemplateId,$context,$user_friendly);
     } else {
         if (!defined('PDF_PAGE_FORMAT')) {
             define('PDF_PAGE_FORMAT', 'USLETTER'); // orig: 'A4'
