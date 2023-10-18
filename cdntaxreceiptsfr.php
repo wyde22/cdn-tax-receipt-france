@@ -30,16 +30,6 @@ function cdntaxreceiptsfr_civicrm_buildForm( $formName, &$form ) {
     );
     $subName = 'view_tax_receipt';
 
-    // Advantage fields
-    $form->assign('isView', TRUE);
-    cdntaxreceiptsfr_advantage($contributionId, NULL, $defaults, TRUE);
-    if (!empty($defaults['advantage_description'])) {
-      $form->assign('advantage_description', $defaults['advantage_description']);
-    }
-    CRM_Core_Region::instance('page-body')->add(array(
-      'template' => 'CRM/Cdntaxreceiptsfr/Form/AddAdvantage.tpl',
-    ));
-
     if (isset($contributionId) && cdntaxreceiptsfr_eligibleForReceipt($contributionId) ) {
       [$issued_on, $receipt_id] = cdntaxreceiptsfr_issued_on($contributionId);
       $is_original_receipt = empty($issued_on);
@@ -58,18 +48,7 @@ function cdntaxreceiptsfr_civicrm_buildForm( $formName, &$form ) {
       $form->addButtons($buttons);
     }
   }
-  if (is_a($form, 'CRM_Contribute_Form_Contribution') && in_array($form->_action, [CRM_Core_Action::ADD, CRM_Core_Action::UPDATE])) {
-    $form->add('text', 'non_deductible_amount', ts('Advantage Amount'), NULL);
-    $form->add('text', 'advantage_description', ts('Advantage Description'), NULL);
-    if ($form->_action & CRM_Core_Action::UPDATE) {
-      cdntaxreceiptsfr_advantage($form->_id, NULL, $defaults, TRUE);
-      $form->setDefaults($defaults);
-    }
-
-    CRM_Core_Region::instance('page-body')->add(array(
-      'template' => 'CRM/Cdntaxreceiptsfr/Form/AddAdvantage.tpl',
-    ));
-  }
+  
 }
 
 /**
