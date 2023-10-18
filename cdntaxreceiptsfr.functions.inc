@@ -272,9 +272,9 @@ function cdntaxreceiptsfr_generateFormattedReceipt($receipt, &$collectedPdf = NU
           "inkind_values" => isset($receipt['inkind_values']) ? $receipt['inkind_values'] : array(),
           "receipt_contributions" => $receipt['contributions'],
           "receipt_status" => $receipt['receipt_status'],
-          "advantage_description" => $receipt['advantage_description'],
-          "advantage_amount" => $receipt['advantage_amount'],
-          "contribution_amount" => $receipt['contribution_amount'],
+          //"advantage_description" => $receipt['advantage_description'],
+          //"advantage_amount" => $receipt['advantage_amount'],
+          //"contribution_amount" => $receipt['contribution_amount'],
         );
     
         $output_files = array($pdf);
@@ -315,21 +315,21 @@ function _cdntaxreceiptsfr_writePage(&$f, $pdf_variables, $receipt) {
   //
 
   $pdf_variables['thankyou_note'] = true; 
-  $results = CRM_Utils_Hook::singleton()->invoke(3, $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_writeReceipt');
+  $results = CRM_Utils_Hook::singleton()->invoke([3], $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_writeReceipt');
   $pdf_variables['thankyou_note'] = false; 
 
   // if custom rewrite is implemented
   // don't execute _cdntaxreceipts_writeReceipt 
   // as it will overwrite the pdf
-  if(isset($pdf_variables) && $pdf_variables['is_custom_rewrite'] == TRUE) {
+  if(isset($pdf_variables)) {
     if(!$pdf_variables['is_duplicate'] && $pdf_variables["mode"] !== CDNTAXRECEIPTS_FR_MODE_PREVIEW) {
       $pdf_variables['duplicate_offset'] = TRUE;
-      CRM_Utils_Hook::singleton()->invoke(3, $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_writeReceipt');
+      CRM_Utils_Hook::singleton()->invoke([3], $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_writeReceipt');
     }
     if($pdf_variables['is_duplicate']) {
       $pdf_variables['is_duplicate'] = TRUE;
       $pdf_variables['duplicate_offset'] = TRUE;
-      CRM_Utils_Hook::singleton()->invoke(3, $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_writeReceipt');
+      CRM_Utils_Hook::singleton()->invoke([3], $f, $pdf_variables, $receipt, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, 'cdntaxreceiptsfr_writeReceipt');
     }   
     return;
     

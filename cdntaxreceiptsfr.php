@@ -447,7 +447,7 @@ function cdntaxreceiptsfr_civicrm_alterMailParams(&$params, $context) {
 
     To avoid this, only execute this hook when context is "messageTemplate"
   */
-  /*if( $context != 'messageTemplate'){
+  if( $context != 'messageTemplate'){
     return;
   }
 
@@ -488,7 +488,7 @@ function cdntaxreceiptsfr_civicrm_alterMailParams(&$params, $context) {
     list($ret, $method, $pdf_file) = cdntaxreceipts_issueTaxReceipt(
       $contribution,
       $nullVar,
-      CDNTAXRECEIPTS_MODE_WORKFLOW
+      CDNTAXRECEIPTS_FR_MODE_WORKFLOW
     );
 
     if ($ret) {
@@ -500,7 +500,7 @@ function cdntaxreceiptsfr_civicrm_alterMailParams(&$params, $context) {
       $params['attachments'] = [$attachment];
     }
 
-  }*/
+  }
 
 }
 
