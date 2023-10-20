@@ -60,7 +60,7 @@ class CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux
         $msgPart = 'body_html';
         $amountRFAggregate = 0;
         
-        if($issueType == 'aggregate') {
+        if($issueType == 'annual') {
             if(count($contributions) > 0) {
                 $amountContributions = array_column($contributions,'receipt_amount');
                 $sumAmountContributions = array_sum($amountContributions);
@@ -70,7 +70,7 @@ class CRM_Cdntaxreceiptsfr_Utils_DownloadPdfRecuFiscaux
 
         $html = [];
         foreach ($rows as $row) {
-            if($issueType == 'aggregate') {
+            if($issueType == 'annual') {
                 $row->tokens('contribution', 'total_amount', $amountRFAggregate . ' Euros');
             }
             $html[] = $row->render($msgPart);
